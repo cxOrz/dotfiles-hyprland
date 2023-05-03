@@ -6,7 +6,7 @@
     "passthrough": false,
     "gtk-layer-shell": true,
     "height": 50,
-    "modules-left": ["clock","custom/weather","wlr/workspaces"],
+    "modules-left": ["clock","wlr/workspaces"],
     "modules-center": ["hyprland/window"],
     "modules-right": ["network", "bluetooth", "temperature", "battery", "backlight", "pulseaudio", "pulseaudio#microphone", "tray"],
     "include": [],
@@ -31,15 +31,6 @@
             "9": [],
             "10": []
         }
-    },
-
-   "custom/weather" : {
-        //shows the current weather and forecast
-        "tooltip" : true,
-        "format" : "{}",
-        "interval" : 30,
-        "exec" : "~/.config/waybar/scripts/waybar-wttr.py",
-        "return-type" : "json"
     },
 
     "tray": {
