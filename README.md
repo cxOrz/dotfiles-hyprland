@@ -1,32 +1,98 @@
-# Hyprland Configure
+# Hyprland & ArchLinux
+My daily-use config, collected from the Internet and customized for myself.
 
-## Dependencies
+Reference: https://wiki.hyprland.org/Getting-Started/Master-Tutorial/
 
-```
-kitty dunst waybar-hyprland brightnessctl pavucontrol pamixer swaybg swaylock grim slurp rofi-lbonn-wayland-git cliphist dolphin qt6-wayland qt5-wayland
+## Hyprland Dependencies
+> You are supposed to have hyprland already installed.
+
+```bash
+sddm-git # Login manager
+kitty # Terminal
+dunst # Notification
+waybar-hyprland # Top Bar
+brightnessctl # Screen brightness command line utils
+pavucontrol # GUI pulseaudio controller
+pamixer # Pulseaudio command line utils
+pulseaudio # Audio
+pulseaudio-bluetooth # bluetooth audio support
+swaybg # background image setter
+swaylock # lockscreen
+grim # screenshot - Screenshot utility for Wayland
+slurp # screenshot - select a region from Wayland compositors
+rofi-lbonn-wayland-git # application launcher
+cliphist # clipboard
+dolphin # File explorer
+breeze # QT and GTK theme pack
+gtk4 # Necessary for Chrome to use Fcitx5
+gnome-keyring # Store secrets, passwords, keys, certificates
+polkit-kde-agent # Authentication Agent
+qt6-wayland # Hyprland Need
+qt5-wayland # Hyprland Need
+qt5ct # Hyprland Need
+xdg-desktop-portal-hyprland-git # Screen Sharing
 ```
 
 ## Configure
 
 ### rofi
-Dracula Theme
+Install Dracula Theme (OPTIONAL)
 ```
 git clone https://github.com/dracula/rofi
-cp rofi/theme/config1.rasi ~/.config/rofi/config.rasi
+cp rofi/theme/config1.rasi ~/.config/rofi/config.rassi
 ```
 
 ### waybar
-
-```
-
-```
+Copy from the folder.
 
 ### swaylock
+Install Dracula Theme (OPTIONAL)
 ```
-git clone https://github.com/dracula/swaylock.git
+git clone https://githucb.com/dracula/swaylock.git
 cp swaylock/ ~/.config/
 ```
 
 ### kitty
+OPTIONAL:
+1. Install `zsh` and [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
+2. Install [JetBrainsMono Nerd Font](https://github.com/ryanoasis/nerd-fonts/releases)
 
-Visit https://github.com/romkatv/powerlevel10k and Install!
+> It's okay if you don't want those things, kitty will use it's default config.
+
+## Might be useful
+
+### google-chrome
+
+~/.config/chrome-flags.conf
+```
+--ozone-platform-hint=auto
+--force-dark-mode
+--enable-features=WebUIDarkMode
+--ignore-gpu-blocklist
+--enable-gpu-rasterization
+--enable-zero-copy
+--gtk-version=4
+```
+
+### SDDM
+
+/etc/sddm.conf
+```
+[General]
+Numlock=on
+```
+
+### zsh
+
+`zsh`, `zsh-syntax-highlighting`, `zsh-autosuggestions` is required.
+
+~/.zshrc
+```bash
+# ...
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+```
