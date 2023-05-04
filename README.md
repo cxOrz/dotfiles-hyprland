@@ -22,7 +22,7 @@ grim # screenshot - Screenshot utility for Wayland
 slurp # screenshot - select a region from Wayland compositors
 rofi-lbonn-wayland-git # application launcher
 cliphist # clipboard
-dolphin # File explorer
+thunar # File explorer
 breeze # QT and GTK theme pack
 gtk4 # Necessary for Chrome to use Fcitx5
 gnome-keyring # Store secrets, passwords, keys, certificates
@@ -95,4 +95,19 @@ HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
+```
+
+### Dark Theme for gtk widgets
+Run the following commands:
+```bash
+gsettings set org.gnome.desktop.interface gtk-theme Adwaita
+gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+```
+
+Config files:
+```bash
+# Both gtk-3.0 and gtk-4.0 config files.
+# ~/.config/gtk-3.0/settings.ini
+# ~/.config/gtk-4.0/settings.ini
+gtk-application-prefer-dark-theme = true
 ```
