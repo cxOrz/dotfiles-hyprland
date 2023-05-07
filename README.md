@@ -3,6 +3,9 @@ My daily-use config, collected from the Internet and customized for myself.
 
 Reference: https://wiki.hyprland.org/Getting-Started/Master-Tutorial/
 
+![20230507233639_1](https://user-images.githubusercontent.com/32982052/236687560-814d37f9-1d8a-48a6-a91f-0faeeea1e467.png)
+
+
 ## Hyprland Dependencies
 > You are supposed to have hyprland already installed.
 
