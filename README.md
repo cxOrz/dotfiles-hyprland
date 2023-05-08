@@ -77,6 +77,16 @@ OPTIONAL:
 --gtk-version=4
 ```
 
+### VS Code
+
+Enable fcitx5
+
+~/.config/code-flags.conf
+```bash
+--ozone-platform=wayland
+--enable-wayland-ime
+```
+
 ### SDDM
 
 /etc/sddm.conf
