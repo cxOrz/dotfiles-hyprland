@@ -19,7 +19,7 @@ pavucontrol # GUI pulseaudio controller
 pamixer # Pulseaudio command line utils
 pulseaudio # Audio
 pulseaudio-bluetooth # bluetooth audio support
-swaybg # background image setter
+hyprpaper # Wallpaper
 swaylock # lockscreen
 grim # screenshot - Screenshot utility for Wayland
 slurp # screenshot - select a region from Wayland compositors
@@ -68,7 +68,7 @@ OPTIONAL:
 
 ~/.config/chrome-flags.conf
 ```
---ozone-platform-hint=auto
+--ozone-platform-hint=wayland
 --force-dark-mode
 --enable-features=WebUIDarkMode
 --ignore-gpu-blocklist
