@@ -3,7 +3,12 @@ My daily-use config, collected from the Internet and customized for myself.
 
 Reference: https://wiki.hyprland.org/Getting-Started/Master-Tutorial/
 
-![20230507233639_1](https://user-images.githubusercontent.com/32982052/236687560-814d37f9-1d8a-48a6-a91f-0faeeea1e467.png)
+![20230519150904_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/9ab26e58-f752-407d-8e70-84e09773676d)
+
+![20230519152017_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/1e05fad4-720c-4b3c-bca2-7a0ed09ab22d)
+
+![20230519151619_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/1129974b-6132-408f-ad4f-18897eae1b01)
+
 
 
 ## Hyprland Dependencies
