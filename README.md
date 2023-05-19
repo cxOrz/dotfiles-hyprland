@@ -26,13 +26,14 @@ slurp # screenshot - select a region from Wayland compositors
 rofi-lbonn-wayland-git # application launcher
 cliphist # clipboard
 thunar # File explorer
-breeze # QT and GTK theme pack
+gvfs # Show Trash, Computer and other devices in thunar
 gtk4 # Necessary for Chrome to use Fcitx5
 gnome-keyring # Store secrets, passwords, keys, certificates
 polkit-kde-agent # Authentication Agent
 qt6-wayland # Hyprland Need
 qt5-wayland # Hyprland Need
 qt5ct # Hyprland Need
+xdg-desktop-portal-gtk # Chrome needed, choose file & upload something
 xdg-desktop-portal-hyprland-git # Screen Sharing
 ```
 
