@@ -3,13 +3,11 @@ My daily-use config, collected from the Internet and customized for myself.
 
 Reference: https://wiki.hyprland.org/Getting-Started/Master-Tutorial/
 
-![20230519150904_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/9ab26e58-f752-407d-8e70-84e09773676d)
+![20230522011457_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/c4f5e420-110d-46eb-a95d-d9c20c36c3c7)
 
-![20230519152017_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/1e05fad4-720c-4b3c-bca2-7a0ed09ab22d)
+![20230522010745_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/2d07f78b-5002-4f0c-8937-af7493a1f56a)
 
-![20230519151619_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/1129974b-6132-408f-ad4f-18897eae1b01)
-
-
+![20230522011816_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/226709be-92d5-42ea-b1da-9884126a2b17)
 
 ## Hyprland Dependencies
 > You are supposed to have hyprland already installed.
@@ -117,9 +115,11 @@ setopt appendhistory
 ```
 
 ### Dark Theme for gtk widgets
+Install `flat-remix-gtk` theme first.
+
 Run the following commands:
 ```bash
-gsettings set org.gnome.desktop.interface gtk-theme Adwaita
+gsettings set org.gnome.desktop.interface gtk-theme Flat-Remix-GTK-Blue-Darkest
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 ```
 
@@ -128,5 +128,6 @@ Config files:
 # Both gtk-3.0 and gtk-4.0 config files.
 # ~/.config/gtk-3.0/settings.ini
 # ~/.config/gtk-4.0/settings.ini
+gtk-theme-name = Flat-Remix-GTK-Blue-Darkest
 gtk-application-prefer-dark-theme = true
 ```
