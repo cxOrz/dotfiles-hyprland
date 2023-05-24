@@ -15,6 +15,7 @@ window#waybar {
 
 tooltip {
     background: #010409;
+    border-radius: 10px;
 }
 
 #workspaces button {
