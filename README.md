@@ -16,7 +16,7 @@ Reference: https://wiki.hyprland.org/Getting-Started/Master-Tutorial/
 sddm-git # Login manager
 kitty # Terminal
 dunst # Notification
-waybar-hyprland # Top Bar
+waybar-hyprland-git # Top Bar
 brightnessctl # Screen brightness command line utils
 pavucontrol # GUI pulseaudio controller
 pamixer # Pulseaudio command line utils
