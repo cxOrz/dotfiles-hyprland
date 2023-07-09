@@ -46,7 +46,7 @@ xdg-desktop-portal-hyprland-git # Screen Sharing
 Install Dracula Theme (OPTIONAL)
 ```
 git clone https://github.com/dracula/rofi
-cp rofi/theme/config1.rasi ~/.config/rofi/config.rassi
+cp rofi/theme/config1.rasi ~/.config/rofi/config.rasi
 ```
 
 ### waybar
@@ -55,7 +55,7 @@ Copy from the folder.
 ### swaylock
 Install Dracula Theme (OPTIONAL)
 ```
-git clone https://githucb.com/dracula/swaylock.git
+git clone https://github.com/dracula/swaylock.git
 cp swaylock/ ~/.config/
 ```
 
