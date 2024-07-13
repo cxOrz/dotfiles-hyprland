@@ -1,5 +1,5 @@
 #!/bin/bash
-sleep 1
+sleep 2
 killall xdg-desktop-portal-hyprland
 killall xdg-desktop-portal-wlr
 killall xdg-desktop-portal

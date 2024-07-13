@@ -8,13 +8,13 @@
   "gtk-layer-shell": true,
   "height": 50,
   "modules-left": [
-    "clock",
-    "wlr/workspaces"
+    "hyprland/workspaces"
   ],
   "modules-center": [
     "hyprland/window"
   ],
   "modules-right": [
+    "tray",
     "network",
     "bluetooth",
     "temperature",
@@ -22,13 +22,13 @@
     "backlight",
     "pulseaudio",
     "pulseaudio#microphone",
-    "tray"
+    "clock"
   ],
   "include": [],
   "hyprland/window": {
     "format": "{}"
   },
-  "wlr/workspaces": {
+  "hypeland/workspaces": {
     "disable-scroll": true,
     "all-outputs": true,
     "on-click": "activate",
@@ -50,8 +50,8 @@
     "spacing": 10
   },
   "clock": {
-    "format": "{:  %R   %a, %m月%e日}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    "format": "{:%H:%M}",
+    // "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "backlight": {
     "device": "intel_backlight",
@@ -124,12 +124,11 @@
   },
   "temperature": {
     "thermal-zone": 1,
-    "format": "{temperatureC}°C ",
+    "format": " {temperatureC}°C",
     "critical-threshold": 80,
     "format-critical": "{temperatureC}°C "
   },
   "network": {
-    // "interface": "wlp2*", // (Optional) To force the use of this interface
     "format-wifi": "  {signalStrength}%",
     "format-ethernet": "{ipaddr}/{cidr}",
     "tooltip-format": "{essid} - {ifname} via {gwaddr}",

@@ -53,12 +53,7 @@ tooltip {
 #workspaces,
 #tray,
 #backlight {
-    padding: 0px 10px;
-}
-
-/*close to the right */
-#bluetooth {
-    margin-right: 10px;
+    padding: 0px 14px;
 }
 
 #temperature.critical {
@@ -81,7 +76,6 @@ tooltip {
 }
 
 #clock {
-    margin-left: 5px;
     color: #fab387;
 }
 
@@ -91,7 +85,6 @@ tooltip {
 
 #bluetooth {
     color: #89b4fa;
-    margin-right: 10px
 } 
 
 #pulseaudio {
@@ -100,10 +93,8 @@ tooltip {
 
 #pulseaudio.microphone {
     color: #cba6f7;
-    margin-right: 10px;
 }
 
 #battery {
     color: #a6e3a1;
-    margin-right: 10px;
 }

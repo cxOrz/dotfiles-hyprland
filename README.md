@@ -20,13 +20,15 @@ waybar-hyprland-git # Top Bar
 brightnessctl # Screen brightness command line utils
 pavucontrol # GUI pulseaudio controller
 pamixer # Pulseaudio command line utils
-pulseaudio # Audio
-pulseaudio-bluetooth # bluetooth audio support
+pipewire
+pipewire-pulse # Audio
+pipewire-alsa
+wireplumber
 hyprpaper # Wallpaper
 swaylock # lockscreen
 grim # screenshot - Screenshot utility for Wayland
 slurp # screenshot - select a region from Wayland compositors
-rofi-lbonn-wayland-git # application launcher
+wofi # application launcher
 cliphist # clipboard
 thunar # File explorer
 gvfs # Show Trash, Computer and other devices in thunar
@@ -38,16 +40,10 @@ qt5-wayland # Hyprland Need
 qt5ct # Hyprland Need
 xdg-desktop-portal-gtk # Chrome needed, choose file & upload something
 xdg-desktop-portal-hyprland-git # Screen Sharing
+nvidia-vaapi-driver
 ```
 
 ## Configure
-
-### rofi
-Install Dracula Theme (OPTIONAL)
-```
-git clone https://github.com/dracula/rofi
-cp rofi/theme/config1.rasi ~/.config/rofi/config.rasi
-```
 
 ### waybar
 Copy from the folder.
@@ -73,45 +69,38 @@ OPTIONAL:
 ~/.config/chrome-flags.conf
 ```
 --ozone-platform-hint=wayland
---force-dark-mode
---enable-features=WebUIDarkMode
---ignore-gpu-blocklist
---enable-gpu-rasterization
---enable-zero-copy
---gtk-version=4
+--enable-wayland-ime
+--use-angle=opengl
 ```
 
 ### VS Code
 
-Enable fcitx5
+If you need to enable enable fcitx5
 
 ~/.config/code-flags.conf
 ```bash
---ozone-platform=wayland
+--ozone-platform-hint=wayland
 --enable-wayland-ime
+--use-angle=opengl
 ```
 
+If it takes long time to launch, try add `--disable-gpu` or just use x11
+```bash
+--ozone-platform-hint=x11
+--gtk-version=4
+```
 ### SDDM
+
+If you are using hybrid card (Intel+Nvidia), sddm might not showing on the external screen when you using HDMI, which can be solved by the following conifg:
+```bash
+# /usr/share/sddm/scripts/Xsetup
+xrandr --setprovideroutputsource modesetting NVIDIA-0
+```
 
 /etc/sddm.conf
 ```
 [General]
 Numlock=on
-```
-
-### zsh
-
-`zsh`, `zsh-syntax-highlighting`, `zsh-autosuggestions` is required.
-
-~/.zshrc
-```bash
-# ...
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
-setopt appendhistory
 ```
 
 ### Dark Theme for gtk widgets
