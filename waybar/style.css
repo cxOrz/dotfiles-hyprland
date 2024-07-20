@@ -1,7 +1,7 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font";
+    font-family: "JetBrainsMono Nerd Font, monospace";
     font-weight: bold;
     font-size: 16px;
     min-height: 0;
@@ -77,6 +77,7 @@ tooltip {
 
 #clock {
     color: #fab387;
+    margin-right: 14px;
 }
 
 #network {
