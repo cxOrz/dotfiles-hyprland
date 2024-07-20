@@ -3,11 +3,11 @@ My daily-use config, collected from the Internet and customized for myself.
 
 Reference: https://wiki.hyprland.org/
 
-![20230522011457_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/c4f5e420-110d-46eb-a95d-d9c20c36c3c7)
+![showcase1](./examples/showcase1.webp)
 
-![20230522010745_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/2d07f78b-5002-4f0c-8937-af7493a1f56a)
+![showcase2](./examples/showcase2.webp)
 
-![20230522011816_1](https://github.com/cxOrz/dotfiles-hyprland/assets/32982052/226709be-92d5-42ea-b1da-9884126a2b17)
+![showcase3](./examples/showcase3.webp)
 
 ## Dependencies
 > You are supposed to have `hyprland` already installed.
