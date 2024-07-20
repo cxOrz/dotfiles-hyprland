@@ -2,46 +2,38 @@
 
 # Get Volume
 get_volume() {
-	volume=$(pamixer --get-volume)
+	volume=$(wpctl get-volume @DEFAULT_SINK@ | awk '{print $2 * 100}')
 	echo "$volume"
 }
 
 # Increase Volume
 inc_volume() {
-	pamixer -i 5
+	wpctl set-volume -l 1 @DEFAULT_SINK@ 5%+
 }
 
 # Decrease Volume
 dec_volume() {
-	pamixer -d 5
+	wpctl set-volume @DEFAULT_SINK@ 5%-
 }
 
 # Toggle Mute
 toggle_mute() {
-	if [ "$(pamixer --get-mute)" == "false" ]; then
-		pamixer -m
-	elif [ "$(pamixer --get-mute)" == "true" ]; then
-		pamixer -u
-	fi
+	wpctl set-mute @DEFAULT_SINK@ toggle
 }
 
 # Toggle Mic
 toggle_mic() {
-	if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
-		pamixer --default-source -m
-	elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
-		pamixer -u --default-source u
-	fi
+	wpctl set-mute @DEFAULT_SOURCE@ toggle
 }
 
 # Increase MIC Volume
 inc_mic_volume() {
-	pamixer --default-source -i 5
+	wpctl set-volume -l 1 @DEFAULT_SOURCE@ 5%+
 }
 
 # Decrease MIC Volume
 dec_mic_volume() {
-	pamixer --default-source -d 5
+	wpctl set-volume @DEFAULT_SOURCE@ 5%-
 }
 
 # Execute accordingly
