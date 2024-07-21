@@ -1,0 +1,41 @@
+#window {
+  border-radius: 14px;
+  background-color: #0d1117;
+}
+
+#input {
+  padding: 4px;
+  border-radius: 14px 14px 0 0;
+  font-size: 16px;
+  background-color: #0d1117;
+  border: none;
+  color: #ecf2f8;
+}
+
+#input:focus {
+  box-shadow: none;
+}
+
+#scroll {
+  border-radius: 14px;
+  background-color: #161b22;
+  margin: 0 12px 12px;
+}
+
+#inner-box {
+  border-radius: 14px;
+  padding: 12px;
+}
+
+#entry {
+  padding: 8px;
+}
+
+#entry:selected {
+  border-radius: 8px;
+  background-color: #21262d;
+}
+
+#entry image {
+  margin-right: 8px;
+}
