@@ -25,6 +25,7 @@ pipewire-alsa
 wireplumber
 hyprpaper # Wallpaper
 hyprlock # lockscreen
+hyprpicker # Color picker
 grim # screenshot - Screenshot utility for Wayland
 slurp # screenshot - select a region from Wayland compositors
 wofi # application launcher
