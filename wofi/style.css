@@ -1,4 +1,8 @@
 #window {
+  background-color: transparent;
+}
+
+#outer-box {
   border-radius: 14px;
   background-color: #0d1117;
 }
