@@ -9,7 +9,7 @@ get_menu() {
 exec_commmand() {
 	cmd_str=$(echo "$1" | awk -F'text:' '{print $2}')
 
-	if [[ "$cmd_str" == "Power off" ]]; then
+	if [[ "$cmd_str" == "Power Off" ]]; then
 		systemctl poweroff
 	elif [[ "$cmd_str" == "Reboot" ]]; then
 		systemctl reboot
