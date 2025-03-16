@@ -1,6 +1,6 @@
 WOFI_CONFIG_PATH=$HOME/.config/wofi
 
-menu="img:$WOFI_CONFIG_PATH/icons/power.svg:text:Power Off\nimg:$WOFI_CONFIG_PATH/icons/reboot.svg:text:Reboot\nimg:$WOFI_CONFIG_PATH/icons/suspend.svg:text:Suspend"
+menu="img:$WOFI_CONFIG_PATH/icons/power.svg:text:Power Off\nimg:$WOFI_CONFIG_PATH/icons/reboot.svg:text:Reboot\nimg:$WOFI_CONFIG_PATH/icons/lock.svg:text:Lock Screen\nimg:$WOFI_CONFIG_PATH/icons/suspend.svg:text:Suspend"
 
 get_menu() {
 	echo -e "$menu"
@@ -15,6 +15,8 @@ exec_commmand() {
 		systemctl reboot
 	elif [[ "$cmd_str" == "Suspend" ]]; then
 		systemctl suspend
+	elif [[ "$cmd_str" == "Lock Screen" ]]; then
+		hyprlock
 	fi
 }
 
