@@ -3,11 +3,11 @@ My daily-use config, collected from the Internet and customized for myself.
 
 Reference: https://wiki.hyprland.org/
 
+
 ![showcase1](./examples/showcase1.webp)
 
 ![showcase2](./examples/showcase2.webp)
 
-![showcase3](./examples/showcase3.webp)
 
 ## Dependencies
 > You are supposed to have `hyprland` already installed. And I'm using Nvidia Card, some configurations are specific to Nvidia card!

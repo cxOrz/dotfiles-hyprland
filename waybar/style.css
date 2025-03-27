@@ -1,49 +1,50 @@
 * {
-    border: none;
-    border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font, monospace";
+    font-family: "JetBrainsMono Nerd Font, monospace, sans-serif";
     font-weight: bold;
     font-size: 16px;
-    min-height: 0;
 }
 
 window#waybar {
-    border-radius: 10px;
-    background: #010409;
-    color: #cdd6f4;
+    border-radius: 16px;
+    background: #0F0F0F;
+    color: #93B1A6;
 }
 
 tooltip {
-    background: #010409;
-    border-radius: 10px;
+    background: #0F0F0F;
+    border-radius: 16px;
+}
+
+tooltip label {
+    color: #93B1A6;
+}
+
+#workspaces {
+    border-radius: 28px;
+    margin: 4px 0 4px 14px;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 #workspaces button {
-    padding: 5px;
-    color: #313244;
-    margin-right: 5px;
+    min-width: 28px;
+    border-radius: 20px;
+    margin: 8px 0;
 }
 
-#workspaces button.active {
-    color: #a6adc8;
-}
-
-#workspaces button.focused {
-    color: #a6adc8;
-    background: #010409;
-}
-
-#workspaces button.urgent {
-    color: #11111b;
-    background: #010409;
+#workspaces button:not(:last-child) {
+    margin-right: 4px;
 }
 
 #workspaces button:hover {
-    background: #010409;
-    color: #cdd6f4;
+    background: rgba(255, 255, 255, 0.08);
 }
 
-#window,
+#workspaces button.active,
+#workspaces button.active:hover {
+    background: #5C8374;
+    color: #0F0F0F;
+}
+
 #clock,
 #battery,
 #pulseaudio,
@@ -51,51 +52,33 @@ tooltip {
 #bluetooth,
 #temperature,
 #workspaces,
-#tray,
 #backlight {
     padding: 0px 14px;
-}
-
-#temperature.critical {
-    color: #eba0ac;
+    background-color: rgba(255, 255, 255, 0.08);
 }
 
 #tray {
-    margin-right: 10px;
-}
-
-#workspaces {
-    margin-left: 10px;
-    padding-right: 0px;
-    padding-left: 5px;
-}
-
-#window {
-    margin-left: 60px;
-    margin-right: 60px;
-}
-
-#clock {
-    color: #fab387;
-    margin-right: 14px;
+    padding: 0px 16px;
 }
 
 #network {
-    color: #f9e2af;
+    border-radius: 28px 0 0 28px;
+    padding-left: 24px;
 }
 
-#bluetooth {
-    color: #89b4fa;
-} 
-
-#pulseaudio {
-    color: #89b4fa;
+#battery.warning {
+    color: orange;
 }
 
-#pulseaudio.microphone {
-    color: #cba6f7;
+#battery.critical {
+    color: red;
 }
 
-#battery {
-    color: #a6e3a1;
+#temperature.critical {
+    color: red;
+}
+
+#clock {
+    padding-right: 16px;
+    border-radius: 0 16px 16px 0;
 }

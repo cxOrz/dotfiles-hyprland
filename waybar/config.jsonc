@@ -1,89 +1,129 @@
 {
-	"layer": "top",
 	"position": "top",
-	"margin": "5 10 0",
+	"margin": "8 20 0",
 	"mod": "dock",
-	"exclusive": true,
-	"passthrough": false,
-	"gtk-layer-shell": true,
-	"height": 50,
-	"modules-left": ["hyprland/workspaces"],
-	"modules-center": ["hyprland/window"],
+	"modules-left": [
+		"hyprland/workspaces"
+	],
+	"modules-center": [
+		"hyprland/window"
+	],
 	"modules-right": [
 		"tray",
 		"network",
 		"bluetooth",
-		"temperature",
 		"battery",
-		// "backlight",
+		"temperature",
 		"pulseaudio",
-		// "pulseaudio#microphone",
 		"clock"
 	],
-	"include": [],
 	"hyprland/window": {
 		"format": "{}"
 	},
 	"hyprland/workspaces": {
-		"all-outputs": true,
-		"on-click": "activate",
 		"persistent-workspaces": {
 			"*": 3
 		}
 	},
 	"tray": {
 		"icon-size": 18,
-		"spacing": 10
+		"spacing": 20
+	},
+	"network": {
+		"format-icons": [
+			"󰤟",
+			"󰤢",
+			"󰤥",
+			"󰤨"
+		],
+		"format-wifi": "{icon}",
+		"format-ethernet": "",
+		"format-linked": "󰄡",
+		"format-disconnected": "",
+		"tooltip-format": "{essid} ({signalStrength}%) - {gwaddr}",
+		"tooltip-format-ethernet": "{ifname} - {gwaddr}",
+		"tooltip-format-disconnected": "Disconnected"
+	},
+	"bluetooth": {
+		"format": "󰂯",
+		"format-disabled": "󰂲",
+		"format-connected": "󰂱 {num_connections}",
+		"tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+		"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+		"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+		"on-click": "bluetooth toggle"
+	},
+	"battery": {
+		"full-at": 95,
+		"states": {
+			"warning": 35,
+			"critical": 10
+		},
+		"format": "{icon}",
+		"format-plugged": "",
+		"format-charging": "󰂄",
+		"format-icons": [
+			"󰂎",
+			"󰁺",
+			"󰁻",
+			"󰁼",
+			"󰁽",
+			"󰁾",
+			"󰁿",
+			"󰂀",
+			"󰂁",
+			"󰂂",
+			"󰁹"
+		],
+		"tooltip-format": "{capacity}%"
+	},
+	"temperature": {
+		"thermal-zone": 1,
+		"format": " {temperatureC}°C",
+		"critical-threshold": 80,
+		"format-critical": " {temperatureC}°C"
+	},
+	"pulseaudio": {
+		"format": "{icon} {volume}%",
+		"format-muted": "󰝟 0%",
+		"on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
+		"on-click-right": "pavucontrol",
+		"on-scroll-up": "wpctl set-volume -l 1.3 @DEFAULT_SINK@ 5%+",
+		"on-scroll-down": "wpctl set-volume @DEFAULT_SINK@ 5%-",
+		"scroll-step": 5,
+		"format-icons": {
+			"headphone": "󱡏",
+			"hands-free": "󱡏",
+			"headset": "󱡏",
+			"default": [
+				"",
+				""
+			]
+		}
 	},
 	"clock": {
-		"format": "{:%H:%M}",
+		"format": "{:%H:%M %a}",
 		"tooltip-format": "{calendar}",
 		"calendar": {
 			"format": {
-				"months": "<span color='#ffead3'><b>{}</b></span>",
-				"weekdays": "<span color='#ffcc66'><b>{}</b></span>",
-				"today": "<span color='#ffcc66'><b><u>{}</u></b></span>"
+				"months": "<span color='#D3D04F'><b>{}</b></span>",
+				"days": "<span color='#93B1A6'><b>{}</b></span>",
+				"weekdays": "<span color='#8EAC50'><b>{}</b></span>",
+				"today": "<span color='#8EAC50'><b><u>{}</u></b></span>"
 			}
 		}
 	},
 	"backlight": {
 		"device": "intel_backlight",
 		"format": "{icon} {percent}%",
-		"format-icons": ["󰃞", "󰃟", "󰃠"],
+		"format-icons": [
+			"󰃞",
+			"󰃟",
+			"󰃠"
+		],
 		"on-scroll-up": "brightnessctl set 10%+",
 		"on-scroll-down": "brightnessctl set 10%-",
 		"min-length": 6
-	},
-	"battery": {
-		"states": {
-			"good": 95,
-			"warning": 30,
-			"critical": 20
-		},
-		"format": "{icon} {capacity}%",
-		"format-charging": " {capacity}%",
-		"format-plugged": " {capacity}%",
-		"format-alt": "{time} {icon}",
-		"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-	},
-	"pulseaudio": {
-		"format": "{icon} {volume}%",
-		"tooltip": false,
-		"format-muted": " Muted",
-		"on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
-		"on-click-right": "pavucontrol",
-		"on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_SINK@ 5%+",
-		"on-scroll-down": "wpctl set-volume @DEFAULT_SINK@ 5%-",
-		"scroll-step": 5,
-		"format-icons": {
-			"headphone": "",
-			"hands-free": "",
-			"headset": "",
-			"phone": "",
-			"portable": "",
-			"car": "",
-			"default": ["", "", ""]
-		}
 	},
 	"pulseaudio#microphone": {
 		"format": "{format_source}",
@@ -91,31 +131,8 @@
 		"format-source-muted": " Muted",
 		"on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle",
 		"on-click-right": "pavucontrol",
-		"on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_SOURCE@ 5%+",
-		"on-scroll-down": "wpctl set-volume -l 1 @DEFAULT_SOURCE@ 5%-",
+		"on-scroll-up": "wpctl set-volume -l 1.3 @DEFAULT_SOURCE@ 5%+",
+		"on-scroll-down": "wpctl set-volume -l 1.3 @DEFAULT_SOURCE@ 5%-",
 		"scroll-step": 5
-	},
-	"temperature": {
-		"thermal-zone": 1,
-		"format": " {temperatureC}°C",
-		"critical-threshold": 80,
-		"format-critical": "{temperatureC}°C "
-	},
-	"network": {
-		"format-wifi": "  {signalStrength}%",
-		"format-ethernet": "{ipaddr}/{cidr}",
-		"tooltip-format": "{essid} - {ifname} via {gwaddr}",
-		"format-linked": "{ifname} (No IP)",
-		"format-disconnected": "Disconnected ⚠",
-		"format-alt": "{ifname}:{essid} {ipaddr}/{cidr}",
-	},
-	"bluetooth": {
-		"format": " {status}",
-		"format-disabled": " off",
-		"format-connected": " {num_connections}",
-		"tooltip-format": "{device_alias}",
-		"tooltip-format-connected": " {device_enumerate}",
-		"tooltip-format-enumerate-connected": "{device_alias}",
-		"on-click": "bluetooth toggle"
 	}
 }
