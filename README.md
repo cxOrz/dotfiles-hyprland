@@ -33,8 +33,9 @@ cliphist # clipboard
 thunar # File explorer
 gvfs # Show Trash, Computer and other devices in thunar
 gtk4 # Necessary for Chrome to use Fcitx5
+seahorse # Password Manager
 gnome-keyring # Store secrets, passwords, keys, certificates
-polkit-kde-agent # Authentication Agent
+hyprpolkitagent # Authentication Agent
 qt6-wayland # Hyprland Need
 qt5-wayland # Hyprland Need
 qt5ct # Hyprland Need
