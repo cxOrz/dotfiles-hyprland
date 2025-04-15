@@ -49,7 +49,7 @@ Here are few config options need to be set, to make apps run flawlessly.
 
 ### Fcitx5 + Rime
 
-Chinese input method config. [Show Details](./fcitx5/).
+Chinese input method config. [Show Details](./.config/fcitx5/).
 
 Details
 

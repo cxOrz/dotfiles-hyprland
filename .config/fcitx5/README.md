@@ -2,7 +2,7 @@
 
 使用 `fcitx5` + `fcitx-rime` + `rime-ice-git` 的中文输入方案。
 
-![fcitx](../examples/fcitx-theme.webp)
+![fcitx](../../examples/fcitx-theme.webp)
 
 ### 依赖：
 
