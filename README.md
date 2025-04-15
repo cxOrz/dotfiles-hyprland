@@ -47,6 +47,12 @@ nvidia-vaapi-driver # Nvidia vaapi driver, for hardware acceleration
 ## Config
 Here are few config options need to be set, to make apps run flawlessly.
 
+### Fcitx5 + Rime
+
+Chinese input method config. [Show Details](./fcitx5/).
+
+Details
+
 ### Google Chrome
 
 ~/.config/chrome-flags.conf

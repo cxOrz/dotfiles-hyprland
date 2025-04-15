@@ -1,0 +1,7 @@
+patch:
+  __include: rime_ice_suggestion:/
+  __patch:
+    menu/page_size: 7
+    switcher/hotkeys/=:
+      - Control+Shift+grave
+    ascii_composer/switch_key/Caps_Lock: commit_code
