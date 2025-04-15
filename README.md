@@ -59,7 +59,6 @@ Details
 ```
 --ozone-platform-hint=wayland
 --enable-wayland-ime
---use-angle=opengl
 ```
 
 ### VS Code
@@ -70,7 +69,6 @@ If you need to enable fcitx5:
 ```bash
 --ozone-platform-hint=wayland
 --enable-wayland-ime
---use-angle=opengl
 ```
 
 If it takes long time to launch, try add `--disable-gpu` or just use x11:
