@@ -51,30 +51,27 @@ Here are few config options need to be set, to make apps run flawlessly.
 
 Chinese input method config. [Show Details](./.config/fcitx5/).
 
-Details
+### Chromium
 
-### Google Chrome
+- Google Chrome `~/.config/chrome-flags.conf`
+- VSCode `~/.config/code-flags.conf`
 
-~/.config/chrome-flags.conf
-```
+```bash
+# Only use one of the 2 sections!!!
+# For wayland native with buggy hardware acceleration
+--use-angle=vulkan
 --ozone-platform-hint=wayland
 --enable-wayland-ime
-```
+--enable-gpu-rasterization
+--enable-zero-copy
+--ignore-gpu-blocklist
 
-### VS Code
-
-If you need to enable fcitx5:
-
-~/.config/code-flags.conf
-```bash
---ozone-platform-hint=wayland
---enable-wayland-ime
-```
-
-If it takes long time to launch, try add `--disable-gpu` or just use x11:
-```bash
+# For xwayland with hardware acceleration
+--enable-features=UseOzonePlatform,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoEncoder,VaapiVideoDecoder,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE
 --ozone-platform-hint=x11
---gtk-version=4
+--enable-gpu-rasterization
+--enable-zero-copy
+--ignore-gpu-blocklist
 ```
 
 ### SDDM
