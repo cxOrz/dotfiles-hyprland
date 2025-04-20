@@ -1,0 +1,85 @@
+* {
+    bg-color: #0d1117;
+    bg-color-secondary: #161b22;
+    bg-color-third: #21262d;
+    bg-color-mask: rgba(255, 255, 255, 0.05);
+
+    text-color: #ffffff;
+    text-color-secondary: #c6cdd5;
+    text-color-third: #89929b;
+
+    color-actived: #268BD2;
+
+    border-rounded: 8px;
+    border-rounded-l: 14px;
+}
+
+window {
+    width: 34%;
+    padding: 0px;
+    border: 1px;
+    border-color: @bg-color-third;
+    border-radius: @border-rounded-l;
+    background-color: @bg-color;
+
+    anchor: 0;
+    location: 0;
+}
+
+inputbar {
+    background-color: @bg-color;
+    border: none;
+    margin: 0px;
+    padding: 8px 16px;
+    children: ["entry"];
+}
+
+entry {
+    text-color: @text-color-secondary;
+    placeholder: "Search here...";
+    placeholder-color: @text-color-third;
+    padding: 4px;
+}
+
+listview {
+    border: none;
+    background-color: @bg-color-secondary;
+    padding: 12px;
+    lines: 8;
+    spacing: 6px;
+}
+
+scrollbar {
+    handle-color: @bg-color-third;
+    margin: 0 0 0 4px;
+}
+
+element {
+    background-color: transparent;
+    text-color: @text-color;
+    border-radius: @border-rounded;
+    padding: 8px;
+    spacing: 8px;
+    cursor: default;
+}
+
+element-icon {
+    size: 1.2em;
+}
+
+element.normal.normal,
+element.alternate.normal {
+    background-color: transparent;
+    text-color: @text-color-secondary;
+}
+
+element.normal.active,
+element.alternate.active {
+    background-color: @bg-color-mask;
+    text-color: @color-actived;
+}
+
+element.selected.normal {
+    background-color: @color-actived;
+    text-color: @text-color;
+}

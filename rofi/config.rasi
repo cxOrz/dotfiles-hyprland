@@ -1,0 +1,11 @@
+configuration {
+  font: "Source Code Pro 16px";
+  location: 0;
+  fixed-num-lines: true;
+  show-icons: true;
+  scroll-method: 1;
+  cycle: true;
+  matching: "fuzzy";
+}
+
+@import "theme"

@@ -28,7 +28,7 @@ hyprlock # lockscreen
 hyprpicker # Color picker
 grim # screenshot - Screenshot utility for Wayland
 slurp # screenshot - select a region from Wayland compositors
-wofi # application launcher
+rofi-wayland # application launcher
 cliphist # clipboard
 thunar # File explorer
 gvfs # Show Trash, Computer and other devices in thunar
