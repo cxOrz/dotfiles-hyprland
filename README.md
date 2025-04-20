@@ -8,6 +8,8 @@ Reference: https://wiki.hyprland.org/
 
 ![showcase2](./examples/showcase2.webp)
 
+![showcase3](./examples/showcase3.webp)
+
 
 ## Dependencies
 > You are supposed to have `hyprland` already installed. And I'm using Nvidia Card, some configurations are specific to Nvidia card!
