@@ -1,0 +1,5 @@
+export LIBVA_DRIVER_NAME=nvidia
+export GBM_BACKEND=nvidia-drm
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export NVD_BACKEND=direct
+export AQ_DRM_DEVICES="/dev/dri/card1:/dev/dri/card2"

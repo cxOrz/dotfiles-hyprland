@@ -1,0 +1,4 @@
+export XCURSOR_SIZE=24
+export HYPRCURSOR_SIZE=24
+export XDG_SESSION_TYPE=wayland
+export GTK_THEME="Flat-Remix-GTK-Blue-Darkest"

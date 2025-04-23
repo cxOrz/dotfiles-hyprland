@@ -22,7 +22,11 @@
 	},
 	"hyprland/workspaces": {
 		"persistent-workspaces": {
-			"*": 3
+			"*": [
+				1,
+				2,
+				3
+			]
 		}
 	},
 	"tray": {
