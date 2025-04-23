@@ -29,8 +29,7 @@ hyprpaper # Wallpaper
 hyprlock # lockscreen
 hyprpicker # Color picker
 feh # Image viewer
-grim # screenshot - Screenshot utility for Wayland
-slurp # screenshot - select a region from Wayland compositors
+flameshot # Screenshot tool
 rofi-wayland # application launcher
 cliphist # clipboard
 yazi # File Manager https://yazi-rs.github.io/docs/installation
