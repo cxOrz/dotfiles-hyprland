@@ -39,7 +39,7 @@ gnome-keyring # Store secrets, passwords, keys, certificates
 hyprpolkitagent # Authentication Agent
 qt6-wayland # Hyprland Need
 qt5-wayland # Hyprland Need
-qt5ct # Hyprland Need
+qt6ct # QT theme config tool
 xdg-desktop-portal-gtk # Chrome needed, choose file & upload something
 xdg-desktop-portal-hyprland-git # Screen Sharing
 nvidia-vaapi-driver # Nvidia vaapi driver, for hardware acceleration
@@ -75,25 +75,11 @@ Chinese input method config. [Show Details](./.config/fcitx5/).
 --ignore-gpu-blocklist
 ```
 
-### SDDM
-
-If you are using hybrid card (Intel+Nvidia), sddm might not showing on the external screen when you using HDMI, which can be solved by the following conifg:
-```bash
-# /usr/share/sddm/scripts/Xsetup
-xrandr --setprovideroutputsource modesetting NVIDIA-0
-```
-
-/etc/sddm.conf
-```
-[General]
-Numlock=on
-```
-
 ### Dark Theme
-Install `flat-remix-gtk` theme or any you want.
+Install `Material-Black-Blueberry` theme or any you want.
 
 Set as the current theme and prefer-dark preference:
 ```bash
-gsettings set org.gnome.desktop.interface gtk-theme Flat-Remix-GTK-Blue-Darkest
+gsettings set org.gnome.desktop.interface gtk-theme Material-Black-Blueberry
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 ```

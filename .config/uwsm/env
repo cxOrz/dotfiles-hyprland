@@ -1,4 +1,12 @@
 export XCURSOR_SIZE=24
 export HYPRCURSOR_SIZE=24
+
 export XDG_SESSION_TYPE=wayland
-export GTK_THEME="Flat-Remix-GTK-Blue-Darkest"
+export XDG_CURRENT_DESKTOP=Hyprland
+export XDG_SESSION_DESKTOP=Hyprland
+
+export GTK_THEME="Material-Black-Blueberry"
+
+export QT_QPA_PLATFORM="wayland;xcb"
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export QT_QPA_PLATFORMTHEME=qt6ct
