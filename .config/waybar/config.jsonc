@@ -1,6 +1,6 @@
 {
 	"position": "top",
-	"margin": "8 20 0",
+	"margin": "8 16 0",
 	"mod": "dock",
 	"modules-left": [
 		"hyprland/workspaces"
