@@ -18,7 +18,7 @@ Reference: https://wiki.hyprland.org/
 uwsm # Universal Wayland Session Manager
 kitty # Terminal
 dunst # Notification
-waybar-hyprland-git # Top Bar
+waybar # Top Bar
 brightnessctl # Screen brightness command line utils
 pavucontrol # GUI pulseaudio controller
 pipewire
@@ -42,6 +42,7 @@ qt5-wayland # Hyprland Need
 qt6ct # QT theme config tool
 xdg-desktop-portal-gtk # Chrome needed, choose file & upload something
 xdg-desktop-portal-hyprland-git # Screen Sharing
+nvidia-open-dkms # Nvidia driver
 nvidia-vaapi-driver # Nvidia vaapi driver, for hardware acceleration
 ```
 
