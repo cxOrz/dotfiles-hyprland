@@ -82,10 +82,10 @@
 		"tooltip-format": "{capacity}%"
 	},
 	"temperature": {
-		"thermal-zone": 1,
+		"hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+		"input-filename": "temp1_input",
 		"format": " {temperatureC}°C",
-		"critical-threshold": 80,
-		"format-critical": " {temperatureC}°C"
+		"critical-threshold": 80
 	},
 	"pulseaudio": {
 		"format": "{icon} {volume}%",
