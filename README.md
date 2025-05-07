@@ -66,14 +66,11 @@ Chinese input method config. [Show Details](./.config/fcitx5/).
 --enable-wayland-ime
 --enable-gpu-rasterization
 --enable-zero-copy
---ignore-gpu-blocklist
 
 # For xwayland with hardware acceleration
---enable-features=UseOzonePlatform,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoEncoder,VaapiVideoDecoder,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE
 --ozone-platform-hint=x11
 --enable-gpu-rasterization
 --enable-zero-copy
---ignore-gpu-blocklist
 ```
 
 ### Dark Theme

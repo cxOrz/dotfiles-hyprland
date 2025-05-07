@@ -106,7 +106,7 @@
 		}
 	},
 	"clock": {
-		"format": "{:%H:%M %a}",
+		"format": "{:%R %a %m/%d}",
 		"tooltip-format": "{calendar}",
 		"calendar": {
 			"format": {
