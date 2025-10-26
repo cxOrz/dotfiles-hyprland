@@ -21,13 +21,7 @@
 		"format": "{}"
 	},
 	"hyprland/workspaces": {
-		"persistent-workspaces": {
-			"*": [
-				1,
-				2,
-				3
-			]
-		}
+		"sort-by": "name"
 	},
 	"tray": {
 		"icon-size": 18,
