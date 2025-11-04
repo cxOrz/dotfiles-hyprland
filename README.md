@@ -12,7 +12,7 @@ Reference: https://wiki.hyprland.org/
 
 
 ## Dependencies
-> You are supposed to have `hyprland` already installed. And I'm using Nvidia Card, some configurations are specific to Nvidia card!
+> You are supposed to have `hyprland` already installed. And I'm using AMD CPU with integrated graphics.
 
 ```bash
 uwsm # Universal Wayland Session Manager
@@ -42,8 +42,6 @@ qt5-wayland # Hyprland Need
 qt6ct # QT theme config tool
 xdg-desktop-portal-gtk # Chrome needed, choose file & upload something
 xdg-desktop-portal-hyprland-git # Screen Sharing
-nvidia-open-dkms # Nvidia driver
-nvidia-vaapi-driver # Nvidia vaapi driver, for hardware acceleration
 ```
 
 ## Config

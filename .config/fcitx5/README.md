@@ -1,6 +1,6 @@
 ## 输入法
 
-使用 `fcitx5` + `fcitx-rime` + `rime-ice-git` 的中文输入方案。
+使用 `fcitx5` + `fcitx5-rime` + `rime-ice-git` 的中文输入方案。
 
 ![fcitx](../../examples/fcitx-theme.webp)
 
@@ -8,7 +8,7 @@
 
 ```bash
 fcitx5 # 输入法框架
-fcitx-rime # Rime引擎
+fcitx5-rime # Rime引擎
 rime-ice-git # 雾凇拼音
 fcitx5-configtool # 可选，UI配置工具
 ```
