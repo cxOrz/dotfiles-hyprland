@@ -6,17 +6,18 @@
 
 window#waybar {
     border-radius: 16px;
-    background: #0d1117;
+    background: rgba(0, 0, 0, 0.38);
     color: #93B1A6;
 }
 
 tooltip {
-    background: #0d1117;
+    background: rgba(0, 0, 0, 0.38);
     border-radius: 14px;
-    border: 1px solid #21262d
+    border: 1px solid #21262d;
 }
 
 tooltip label {
+    padding: 6px 12px;
     color: #93B1A6;
 }
 
