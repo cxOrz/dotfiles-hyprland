@@ -30,6 +30,8 @@ hyprlock # lockscreen
 hyprpicker # Color picker
 feh # Image viewer
 flameshot # Screenshot tool
+grimp # Screenshot tool
+slurp # Screenshot tool
 rofi-wayland # application launcher
 cliphist # clipboard
 yazi # File Manager https://yazi-rs.github.io/docs/installation
