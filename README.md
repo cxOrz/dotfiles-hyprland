@@ -4,10 +4,8 @@ My daily-use config, collected from the Internet and customized for myself.
 Reference: https://wiki.hyprland.org/
 
 
-| workspace |
-| :---: |
-| ![workspace](./examples/showcase2.webp)|
-
+![workspace](./examples/showcase2.webp)
+![hyprlock](./examples/hyprlock.webp)
 
 | powermenu | control-center |
 | :---: | :---: |
