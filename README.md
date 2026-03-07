@@ -4,11 +4,15 @@ My daily-use config, collected from the Internet and customized for myself.
 Reference: https://wiki.hyprland.org/
 
 
-![showcase1](./examples/showcase1.webp)
+| workspace |
+| :---: |
+| ![workspace](./examples/showcase2.webp)|
 
-![showcase2](./examples/showcase2.webp)
 
-![showcase3](./examples/showcase3.webp)
+| powermenu | control-center |
+| :---: | :---: |
+| ![powermenu](./examples/powermenu.webp) | ![control-center](./examples/control-center.webp) |
+
 
 
 ## Dependencies
@@ -18,6 +22,7 @@ Reference: https://wiki.hyprland.org/
 uwsm # Universal Wayland Session Manager
 kitty # Terminal
 dunst # Notification
+quickshell # UI toolkit
 waybar # Top Bar
 brightnessctl # Screen brightness command line utils
 pavucontrol # GUI pulseaudio controller
