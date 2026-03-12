@@ -1,86 +1,166 @@
+/* ===== ChromeOS Shelf — Waybar Theme ===== */
+
 * {
-    font-family: "JetBrainsMono Nerd Font, monospace, sans-serif";
-    font-weight: bold;
-    font-size: 16px;
+    font-family: "Roboto", "JetBrainsMono Nerd Font", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    min-height: 0;
 }
 
+/* ---------- Bar ---------- */
 window#waybar {
-    border-radius: 16px;
-    background: rgba(0, 0, 0, 0.38);
-    color: #93B1A6;
+    background-color: rgba(32, 33, 36, 0.72);
+    color: #e8eaed;
+    border-radius: 24px 24px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    transition-property: background-color;
+    transition-duration: 0.3s;
 }
 
-tooltip {
-    background: rgba(0, 0, 0, 0.38);
-    border-radius: 14px;
-    border: 1px solid #21262d;
+/* ========== LEFT MODULES ========== */
+
+/* Launcher button — ChromeOS circle */
+#custom-launcher {
+    font-size: 20px;
+    padding: 1px 12px 0;
+    margin: 7px 2px 7px 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10);
+    color: #e8eaed;
+    transition: background 0.2s ease;
 }
 
-tooltip label {
-    padding: 6px 12px;
-    color: #93B1A6;
+#custom-launcher:hover {
+    background: rgba(255, 255, 255, 0.20);
 }
 
+/* Workspaces — pill strip */
 #workspaces {
-    border-radius: 16px 24px 24px 16px;
-    margin: 0;
-    background-color: rgba(255, 255, 255, 0.08);
+    margin: 7px 4px;
+    padding: 0 4px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.06);
 }
 
 #workspaces button {
     min-width: 28px;
-    border-radius: 20px;
-    margin: 8px 0;
-}
-
-#workspaces button:not(:last-child) {
-    margin-right: 4px;
+    border-radius: 14px;
+    margin: 4px 2px;
+    padding: 1px 8px 0;
+    color: rgba(232, 234, 237, 0.60);
+    background: transparent;
+    transition: all 0.2s ease;
 }
 
 #workspaces button:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.10);
+    color: #e8eaed;
 }
 
 #workspaces button.active,
 #workspaces button.active:hover {
-    background: #5C8374;
-    color: #0d1117;
+    background: rgba(138, 180, 248, 0.28);
+    color: #8ab4f8;
 }
 
+/* ========== CENTER MODULE ========== */
+
+#window {
+    padding: 1px 16px 0;
+    color: rgba(232, 234, 237, 0.85);
+    font-size: 13px;
+}
+
+/* ========== RIGHT MODULES ========== */
+
+/* System tray */
+#tray {
+    padding: 0 8px;
+    margin: 7px 4px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* ----- Date pill (standalone) ----- */
+#custom-date {
+    padding: 1px 16px 0;
+    margin: 7px 4px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e8eaed;
+    font-size: 14px;
+}
+
+#custom-date:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+/* ----- System status pill group: clock | audio | net | bt | battery/power ----- */
 #clock,
-#battery,
 #pulseaudio,
 #network,
 #bluetooth,
-#temperature,
-#workspaces,
-#backlight {
-    padding: 0px 14px;
-    background-color: rgba(255, 255, 255, 0.08);
+#battery,
+#custom-power {
+    padding: 1px 10px 0;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e8eaed;
+    transition: background 0.2s ease;
 }
 
-#tray {
-    padding: 0px 16px;
+#clock:hover,
+#pulseaudio:hover,
+#network:hover,
+#bluetooth:hover,
+#battery:hover,
+#custom-power:hover {
+    background: rgba(255, 255, 255, 0.14);
 }
 
-#network {
-    border-radius: 24px 0 0 24px;
-    padding-left: 24px;
+/* First in group — left rounded */
+#clock {
+    border-radius: 20px 0 0 20px;
+    padding-left: 14px;
 }
+
+/* Last in group — right rounded (battery on laptop, custom-power on desktop — mutually exclusive) */
+#battery,
+#custom-power {
+    border-radius: 0 20px 20px 0;
+    padding-right: 14px;
+    margin-right: 7px;
+}
+
+/* ========== STATE VARIANTS ========== */
 
 #battery.warning {
-    color: orange;
+    color: #fbbc04;
 }
 
 #battery.critical {
-    color: red;
+    color: #ea4335;
 }
 
-#temperature.critical {
-    color: red;
+#battery.charging {
+    color: #34a853;
 }
 
-#clock {
-    padding-right: 16px;
-    border-radius: 0 16px 16px 0;
+#network.disconnected {
+    color: rgba(232, 234, 237, 0.40);
+}
+
+#bluetooth.disabled {
+    color: rgba(232, 234, 237, 0.30);
+}
+
+#pulseaudio.muted {
+    color: rgba(232, 234, 237, 0.40);
 }
