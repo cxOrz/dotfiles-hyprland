@@ -18,6 +18,7 @@ Reference: https://wiki.hyprland.org/
 
 ```bash
 uwsm # Universal Wayland Session Manager
+greetd # Login Manager
 kitty # Terminal
 dunst # Notification
 quickshell # UI toolkit

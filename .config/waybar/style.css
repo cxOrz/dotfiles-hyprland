@@ -22,12 +22,12 @@ window#waybar {
 /* Launcher button — ChromeOS circle */
 #custom-launcher {
     font-size: 20px;
-    padding: 1px 12px 0;
-    margin: 8px 2px 8px 10px;
+    padding: 0px 14px 0 9px;
+    margin: 6px 2px 6px 6px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.10);
     color: #e2e3e1;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 #custom-launcher:hover {
@@ -36,7 +36,7 @@ window#waybar {
 
 /* Workspaces — pill indicators */
 #workspaces {
-    margin: 8px 4px;
+    margin: 6px 4px;
     padding: 0 6px;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.06);
@@ -46,7 +46,7 @@ window#waybar {
     all: unset;
     min-width: 20px;
     min-height: 8px;
-    margin: 12px 3px;
+    margin: 14px 4px;
     border-radius: 4px;
     background: rgba(255, 255, 255, 0.25);
     transition: all 0.3s ease;
@@ -73,9 +73,8 @@ window#waybar {
 /* ========== CENTER MODULE ========== */
 
 #window {
-    padding: 1px 16px 0;
     color: rgba(226, 227, 225, 0.85);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 /* ========== RIGHT MODULES ========== */
@@ -97,8 +96,8 @@ window#waybar {
 /* ----- Date pill (standalone) ----- */
 #custom-date {
     padding: 1px 16px 0;
-    margin: 8px 4px;
-    border-radius: 16px;
+    margin: 6px 4px;
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.08);
     color: #e2e3e1;
     font-size: 14px;
@@ -116,8 +115,8 @@ window#waybar {
 #battery,
 #custom-power {
     padding: 1px 10px 0;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
     background: rgba(255, 255, 255, 0.08);
     color: #e2e3e1;
     transition: background 0.2s ease;
@@ -134,7 +133,7 @@ window#waybar {
 
 /* First in group — left rounded */
 #clock {
-    border-radius: 16px 0 0 16px;
+    border-radius: 18px 0 0 18px;
     padding-left: 14px;
     font-weight: 700;
 }
@@ -142,9 +141,9 @@ window#waybar {
 /* Last in group — right rounded (battery on laptop, custom-power on desktop — mutually exclusive) */
 #battery,
 #custom-power {
-    border-radius: 0 16px 16px 0;
+    border-radius: 0 18px 18px 0;
     padding-right: 14px;
-    margin-right: 8px;
+    margin-right: 6px;
 }
 
 /* ========== STATE VARIANTS ========== */

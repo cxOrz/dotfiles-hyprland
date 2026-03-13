@@ -8,6 +8,13 @@ import "../.." as Root
 Scope {
     id: root
     property bool menuOpen: false
+    property int selectedIndex: 0
+    readonly property int buttonCount: 4
+
+    // Reset selection every time the menu opens
+    onMenuOpenChanged: {
+        if (menuOpen) selectedIndex = 0;
+    }
 
     Loader {
         active: root.menuOpen
@@ -30,10 +37,10 @@ Scope {
 
             color: "transparent"
 
-            // Semi-transparent overlay background + click-outside-to-close
+            // Dim overlay — lighter than before so blur on contentBox is visible
             Rectangle {
                 anchors.fill: parent
-                color: Qt.rgba(Root.Theme.bg.r, Root.Theme.bg.g, Root.Theme.bg.b, 0.7)
+                color: Qt.rgba(0, 0, 0, 0.35)
 
                 MouseArea {
                     anchors.fill: parent
@@ -41,112 +48,117 @@ Scope {
                 }
             }
 
-            // Centered content box
+            // Centered content box — semi-transparent so hyprland blur shines through
             Rectangle {
                 id: contentBox
                 anchors.centerIn: parent
-                width: contentRow.implicitWidth + Root.Theme.paddingLarge * 2
-                height: contentRow.implicitHeight + Root.Theme.paddingLarge * 2
-                radius: Root.Theme.radiusLarge
-                color: Root.Theme.bgSecondary
-                border.color: Root.Theme.border
+                width: contentRow.implicitWidth + 28 * 2
+                height: contentRow.implicitHeight + 24 * 2
+                radius: 20
+                // rgba(32, 34, 36, 0.82) — matches waybar window background tone
+                color: Qt.rgba(0.125, 0.133, 0.141, 0.82)
+                border.color: Qt.rgba(1, 1, 1, 0.08)
                 border.width: 1
 
-                // Block clicks from reaching the background dismiss area
-                MouseArea {
-                    anchors.fill: parent
+                opacity: 0
+                scale: 0.93
+
+                Component.onCompleted: appearAnim.start()
+
+                ParallelAnimation {
+                    id: appearAnim
+                    NumberAnimation {
+                        target: contentBox; property: "opacity"
+                        to: 1; duration: 180; easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: contentBox; property: "scale"
+                        to: 1; duration: 180; easing.type: Easing.OutCubic
+                    }
                 }
+
+                // Block clicks from reaching the background dismiss area
+                MouseArea { anchors.fill: parent }
 
                 RowLayout {
                     id: contentRow
                     anchors.centerIn: parent
-                    spacing: Root.Theme.paddingLarge
+                    spacing: 12
 
                     PowerButton {
                         icon: "󰐥"
                         label: "Shutdown"
-                        onClicked: {
-                            shutdownProc.startDetached();
-                            root.menuOpen = false;
-                        }
+                        selected: root.selectedIndex === 0
+                        onClicked: { shutdownProc.startDetached(); root.menuOpen = false; }
                     }
 
                     PowerButton {
                         icon: "󰜉"
                         label: "Reboot"
-                        onClicked: {
-                            rebootProc.startDetached();
-                            root.menuOpen = false;
-                        }
+                        selected: root.selectedIndex === 1
+                        onClicked: { rebootProc.startDetached(); root.menuOpen = false; }
                     }
 
                     PowerButton {
                         icon: "󰌾"
                         label: "Lock"
-                        onClicked: {
-                            lockProc.startDetached();
-                            root.menuOpen = false;
-                        }
+                        selected: root.selectedIndex === 2
+                        onClicked: { lockProc.startDetached(); root.menuOpen = false; }
                     }
 
                     PowerButton {
                         icon: "󰤄"
                         label: "Suspend"
-                        onClicked: {
-                            suspendProc.startDetached();
-                            root.menuOpen = false;
-                        }
+                        selected: root.selectedIndex === 3
+                        onClicked: { suspendProc.startDetached(); root.menuOpen = false; }
                     }
                 }
             }
 
-            // Escape key handler — needs focus to receive key events
+            // Keyboard navigation handler
             Item {
                 focus: true
+
                 Keys.onPressed: (event) => {
                     if (event.key === Qt.Key_Escape) {
                         root.menuOpen = false;
+                        event.accepted = true;
+
+                    } else if (event.key === Qt.Key_Left ||
+                               (event.key === Qt.Key_Tab && (event.modifiers & Qt.ShiftModifier))) {
+                        root.selectedIndex = (root.selectedIndex - 1 + root.buttonCount) % root.buttonCount;
+                        event.accepted = true;
+
+                    } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Tab) {
+                        root.selectedIndex = (root.selectedIndex + 1) % root.buttonCount;
+                        event.accepted = true;
+
+                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter ||
+                               event.key === Qt.Key_Space) {
+                        switch (root.selectedIndex) {
+                            case 0: shutdownProc.startDetached(); break;
+                            case 1: rebootProc.startDetached(); break;
+                            case 2: lockProc.startDetached(); break;
+                            case 3: suspendProc.startDetached(); break;
+                        }
+                        root.menuOpen = false;
+                        event.accepted = true;
                     }
                 }
             }
         }
     }
 
-    // Process definitions (outside Loader so they persist for startDetached calls)
-    Process {
-        id: shutdownProc
-        command: ["systemctl", "poweroff"]
-    }
+    // Process definitions outside Loader so they persist for startDetached calls
+    Process { id: shutdownProc; command: ["systemctl", "poweroff"] }
+    Process { id: rebootProc;   command: ["systemctl", "reboot"] }
+    Process { id: lockProc;     command: ["hyprlock"] }
+    Process { id: suspendProc;  command: ["systemctl", "suspend"] }
 
-    Process {
-        id: rebootProc
-        command: ["systemctl", "reboot"]
-    }
-
-    Process {
-        id: lockProc
-        command: ["hyprlock"]
-    }
-
-    Process {
-        id: suspendProc
-        command: ["systemctl", "suspend"]
-    }
-
-    // IPC handler for external toggle: `qs ipc call powermenu toggle`
     IpcHandler {
         target: "powermenu"
-
-        function toggle(): void {
-            root.menuOpen = !root.menuOpen;
-        }
-
-        function open(): void {
-            root.menuOpen = true;
-        }
-
-        function close(): void {
-            root.menuOpen = false;
-        }
+        function toggle(): void { root.menuOpen = !root.menuOpen; }
+        function open(): void   { root.menuOpen = true; }
+        function close(): void  { root.menuOpen = false; }
     }
 }
