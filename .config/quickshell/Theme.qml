@@ -3,53 +3,92 @@ import QtQuick
 
 QtObject {
     // ── Active theme name ──────────────────────────────────────────
-    property string currentTheme: "material-ocean"
+    property string currentTheme: "md3-cobalt-night"
 
     // ── Theme definitions ──────────────────────────────────────────
     readonly property var _themes: ({
-        "material-ocean": {
-            name: "Material Ocean",
-            panelBg: "#1A1B20", panelBorder: "#2A2C31", surface: "#1E1F25",
-            surfaceContainer: "#282A2F", surfaceContainerHigh: "#33353A", surfaceBright: "#3E4046",
-            primary: "#8AB4F8", primaryContainer: "#2D4F7F", onPrimaryContainer: "#D1E4FF",
-            tileActive: "#8AB4F8", tileActiveText: "#062E6F",
-            tileInactive: "#33353A", tileInactiveText: "#C4C6CF",
-            sliderTrack: "#33353A", sliderActiveTrack: "#8AB4F8", sliderThumb: "#8AB4F8",
-            textPrimary: "#E3E3E8", textSecondary: "#8E9099",
-            toggleOff: "#5A5D65", connected: "#81C995", error: "#F28B82",
-            secondaryContainer: "#2D4F7F", textOnSecondaryContainer: "#D1E4FF",
-            shelfBg: "#1A1B20"
+        "md3-cobalt-night": {
+            name: "Cobalt Night",
+            panelBg: "#0F1117", panelBorder: "#252740", surface: "#1A1C28",
+            surfaceContainer: "#252740", surfaceContainerHigh: "#2E3148", surfaceBright: "#3A3E60",
+            primary: "#9BBDE8", primaryContainer: "#1E3058", onPrimaryContainer: "#C8D8F5",
+            tileActive: "#9BBDE8", tileActiveText: "#0F1117",
+            tileInactive: "#2E3148", tileInactiveText: "#E0E2F0",
+            sliderTrack: "#2E3148", sliderActiveTrack: "#9BBDE8", sliderThumb: "#9BBDE8",
+            textPrimary: "#E0E2F0", textSecondary: "#8E90A8",
+            toggleOff: "#404460", connected: "#86D5A0", error: "#F2A8B8",
+            secondaryContainer: "#1E3058", textOnSecondaryContainer: "#C8D8F5",
+            shelfBg: "#0F1117"
         },
-        "catppuccin-mocha": {
-            name: "Catppuccin Mocha",
-            panelBg: "#1E1E2E", panelBorder: "#313244", surface: "#181825",
-            surfaceContainer: "#313244", surfaceContainerHigh: "#45475A", surfaceBright: "#585B70",
-            primary: "#89B4FA", primaryContainer: "#2B3D5B", onPrimaryContainer: "#CDD6F4",
-            tileActive: "#89B4FA", tileActiveText: "#1E1E2E",
-            tileInactive: "#313244", tileInactiveText: "#BAC2DE",
-            sliderTrack: "#45475A", sliderActiveTrack: "#89B4FA", sliderThumb: "#89B4FA",
-            textPrimary: "#CDD6F4", textSecondary: "#A6ADC8",
-            toggleOff: "#585B70", connected: "#A6E3A1", error: "#F38BA8",
-            secondaryContainer: "#2B3D5B", textOnSecondaryContainer: "#CDD6F4",
-            shelfBg: "#1E1E2E"
+        "md3-sage-forest": {
+            name: "Sage Forest",
+            panelBg: "#0D1410", panelBorder: "#203028", surface: "#172219",
+            surfaceContainer: "#203028", surfaceContainerHigh: "#2A3D2D", surfaceBright: "#385045",
+            primary: "#7EC996", primaryContainer: "#1A4028", onPrimaryContainer: "#B8E8C8",
+            tileActive: "#7EC996", tileActiveText: "#0D1410",
+            tileInactive: "#2A3D2D", tileInactiveText: "#DCF0E2",
+            sliderTrack: "#2A3D2D", sliderActiveTrack: "#7EC996", sliderThumb: "#7EC996",
+            textPrimary: "#DCF0E2", textSecondary: "#8AAE92",
+            toggleOff: "#3A5040", connected: "#72CAD0", error: "#F2A8A8",
+            secondaryContainer: "#1A4028", textOnSecondaryContainer: "#B8E8C8",
+            shelfBg: "#0D1410"
         },
-        "rose-pine-moon": {
-            name: "Rosé Pine Moon",
-            panelBg: "#232136", panelBorder: "#393552", surface: "#2A273F",
-            surfaceContainer: "#393552", surfaceContainerHigh: "#44415A", surfaceBright: "#56526E",
-            primary: "#C4A7E7", primaryContainer: "#3E3564", onPrimaryContainer: "#E0DEF4",
-            tileActive: "#C4A7E7", tileActiveText: "#232136",
-            tileInactive: "#393552", tileInactiveText: "#E0DEF4",
-            sliderTrack: "#44415A", sliderActiveTrack: "#C4A7E7", sliderThumb: "#C4A7E7",
-            textPrimary: "#E0DEF4", textSecondary: "#908CAA",
-            toggleOff: "#56526E", connected: "#9CCFD8", error: "#EB6F92",
-            secondaryContainer: "#3E3564", textOnSecondaryContainer: "#E0DEF4",
-            shelfBg: "#232136"
+        "md3-rose-quartz": {
+            name: "Rose Quartz",
+            panelBg: "#170E12", panelBorder: "#381C2C", surface: "#281520",
+            surfaceContainer: "#381C2C", surfaceContainerHigh: "#4A2838", surfaceBright: "#603050",
+            primary: "#EEA8C0", primaryContainer: "#4A1C30", onPrimaryContainer: "#F5D0E0",
+            tileActive: "#EEA8C0", tileActiveText: "#170E12",
+            tileInactive: "#4A2838", tileInactiveText: "#F0DEE5",
+            sliderTrack: "#4A2838", sliderActiveTrack: "#EEA8C0", sliderThumb: "#EEA8C0",
+            textPrimary: "#F0DEE5", textSecondary: "#A88090",
+            toggleOff: "#603048", connected: "#A0C8F0", error: "#F5A0A8",
+            secondaryContainer: "#4A1C30", textOnSecondaryContainer: "#F5D0E0",
+            shelfBg: "#170E12"
+        },
+        "md3-amethyst": {
+            name: "Amethyst",
+            panelBg: "#110E18", panelBorder: "#2C2440", surface: "#1E1A2C",
+            surfaceContainer: "#2C2440", surfaceContainerHigh: "#3A3050", surfaceBright: "#504068",
+            primary: "#C8B0F0", primaryContainer: "#3A2870", onPrimaryContainer: "#E8D8FF",
+            tileActive: "#C8B0F0", tileActiveText: "#110E18",
+            tileInactive: "#3A3050", tileInactiveText: "#E8E0F5",
+            sliderTrack: "#3A3050", sliderActiveTrack: "#C8B0F0", sliderThumb: "#C8B0F0",
+            textPrimary: "#E8E0F5", textSecondary: "#9A90B8",
+            toggleOff: "#504068", connected: "#86D0C0", error: "#F5A0A8",
+            secondaryContainer: "#3A2870", textOnSecondaryContainer: "#E8D8FF",
+            shelfBg: "#110E18"
+        },
+        "md3-amber-dusk": {
+            name: "Amber Dusk",
+            panelBg: "#18120A", panelBorder: "#382818", surface: "#281E10",
+            surfaceContainer: "#382818", surfaceContainerHigh: "#483220", surfaceBright: "#604030",
+            primary: "#F0B87A", primaryContainer: "#503018", onPrimaryContainer: "#F8DEB8",
+            tileActive: "#F0B87A", tileActiveText: "#18120A",
+            tileInactive: "#483220", tileInactiveText: "#F0E8D5",
+            sliderTrack: "#483220", sliderActiveTrack: "#F0B87A", sliderThumb: "#F0B87A",
+            textPrimary: "#F0E8D5", textSecondary: "#A88860",
+            toggleOff: "#604030", connected: "#90C890", error: "#F0907A",
+            secondaryContainer: "#503018", textOnSecondaryContainer: "#F8DEB8",
+            shelfBg: "#18120A"
+        },
+        "md3-arctic-mist": {
+            name: "Arctic Mist",
+            panelBg: "#080F14", panelBorder: "#162838", surface: "#101C26",
+            surfaceContainer: "#162838", surfaceContainerHigh: "#1E3848", surfaceBright: "#2A4A60",
+            primary: "#7ECCE8", primaryContainer: "#103858", onPrimaryContainer: "#C0E4F5",
+            tileActive: "#7ECCE8", tileActiveText: "#080F14",
+            tileInactive: "#1E3848", tileInactiveText: "#D8EEF5",
+            sliderTrack: "#1E3848", sliderActiveTrack: "#7ECCE8", sliderThumb: "#7ECCE8",
+            textPrimary: "#D8EEF5", textSecondary: "#7A9AA8",
+            toggleOff: "#2A4A60", connected: "#90D4A8", error: "#F2A8A8",
+            secondaryContainer: "#103858", textOnSecondaryContainer: "#C0E4F5",
+            shelfBg: "#080F14"
         }
     })
 
     // ── Active theme reference ─────────────────────────────────────
-    readonly property var _t: _themes[currentTheme] || _themes["material-ocean"]
+    readonly property var _t: _themes[currentTheme] || _themes["md3-cobalt-night"]
 
     // ── Themed color properties ────────────────────────────────────
     // Surface colors

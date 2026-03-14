@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# Notification count for Waybar — outputs JSON with text and class
-count=$(dunstctl count history 2>/dev/null || echo "0")
-# Sanitize to integer
-count=$(echo "$count" | tr -dc '0-9')
+# Notification count for Waybar — reads count written by QuickShell NotificationService
+count=$(cat /tmp/qs-notif-count 2>/dev/null | tr -dc '0-9')
 count=${count:-0}
 
 if [ "$count" -gt 0 ]; then

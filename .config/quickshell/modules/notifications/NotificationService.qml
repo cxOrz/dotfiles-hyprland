@@ -1,6 +1,8 @@
 pragma Singleton
 import QtQuick
+import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Notifications
 
 QtObject {
     id: root
@@ -9,139 +11,113 @@ QtObject {
     property var notifications: []
     property int count: notifications.length
 
-    // Notifications list change is auto-signaled via property assignment
+    // Internal map of id → Notification object (for tracked=false on remove)
+    property var _notifMap: ({})
 
-    // Process to fetch dunst notification history
-    property var historyProcess: Process {
-        command: ["dunstctl", "history"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                root.parseHistory(this.text);
-            }
+    // Signal emitted for each new notification — toast layer listens here
+    signal newNotification(int notifId, string appName, string summary,
+                           string body, string urgency, int timeout)
+
+    // ── NotificationServer — claims org.freedesktop.Notifications on DBus ──
+    property var server: NotificationServer {
+        keepOnReload: true
+        bodySupported: true
+        bodyMarkupSupported: false
+        actionsSupported: false
+
+        onNotification: function(notif) {
+            // Keep in tracked list for history
+            notif.tracked = true
+            root._notifMap[notif.id] = notif
+
+            // Prepend to history array
+            var newList = root.notifications.slice()
+            newList.unshift({
+                id: notif.id,
+                appName: notif.appName,
+                summary: notif.summary,
+                body: notif.body,
+                urgency: root._urgencyStr(notif.urgency),
+                timestamp: Date.now(),
+                iconPath: notif.appIcon
+            })
+            root.notifications = newList
+
+            // Fire toast signal
+            var ms = notif.expireTimeout > 0 ? Math.round(notif.expireTimeout) : 5000
+            root.newNotification(notif.id, notif.appName, notif.summary,
+                                 notif.body, root._urgencyStr(notif.urgency), ms)
+
+            root._updateWaybar()
         }
     }
 
-    // Process for clearing all notifications
-    property var clearProcess: Process {
-        command: ["dunstctl", "history-clear"]
-        onExited: function(exitCode, exitStatus) {
-            if (exitCode === 0) {
-                root.notifications = [];
-                signalWaybar.running = true;
-            }
-        }
+    // ── Kill dunst on startup to avoid DBus conflict ─────────────────────
+    property var _killDunst: Process {
+        command: ["pkill", "dunst"]
+        Component.onCompleted: running = true
     }
 
-    // Process for removing a single notification
-    property var removeProcess: Process {
-        id: removeProc
-        command: ["dunstctl", "history-rm", "0"]
-        onExited: function(exitCode, exitStatus) {
-            if (exitCode === 0) {
-                root.refresh();
-                signalWaybar.running = true;
-            }
-        }
+    // ── Waybar signal process ─────────────────────────────────────────────
+    property var _waybarProc: Process {
+        id: waybarProc
     }
 
-    // Signal waybar to refresh notification count immediately
-    property var signalWaybar: Process {
-        command: ["pkill", "-RTMIN+1", "waybar"]
+    function _updateWaybar() {
+        var c = root.notifications.length
+        waybarProc.command = ["sh", "-c",
+            "printf '%s' '" + c + "' > /tmp/qs-notif-count; pkill -RTMIN+1 waybar 2>/dev/null; true"]
+        waybarProc.running = true
     }
 
-    // SocketServer for live updates from dunst hook — disabled in v0.2.1 (no onMessage API)
-    // Live updates use manual refresh on panel open instead
-    // Parse the dunstctl history JSON output
-    // Structure: { "type": "aa{sv}", "data": [[{...}, {...}]] }
-    // Each notification field: { "type": "s"|"i"|"x", "data": <value> }
-    function parseHistory(jsonText) {
-        try {
-            var parsed = JSON.parse(jsonText);
-            var rawList = parsed.data && parsed.data[0] ? parsed.data[0] : [];
-            var result = [];
-
-            for (var i = 0; i < rawList.length; i++) {
-                var raw = rawList[i];
-                var notification = {
-                    id: extractField(raw, "id", 0),
-                    appName: extractField(raw, "appname", "Unknown"),
-                    summary: extractField(raw, "summary", ""),
-                    body: extractField(raw, "body", ""),
-                    urgency: extractField(raw, "urgency", "NORMAL"),
-                    timestamp: extractField(raw, "timestamp", 0),
-                    iconPath: extractField(raw, "icon_path", ""),
-                    category: extractField(raw, "category", "")
-                };
-                result.push(notification);
-            }
-
-            root.notifications = result;
-        } catch (e) {
-            console.warn("NotificationService: Failed to parse dunstctl history:", e);
-            root.notifications = [];
-        }
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function _urgencyStr(urgency) {
+        if (urgency === NotificationUrgency.Critical) return "CRITICAL"
+        if (urgency === NotificationUrgency.Low)      return "LOW"
+        return "NORMAL"
     }
 
-    // Parse incoming JSON from dunst hook script — kept for future use
-    // (SocketServer not available in v0.2.1; panel refreshes via dunstctl on open)
-
-    // Extract a field from dunstctl's nested {type, data} structure
-    function extractField(obj, fieldName, fallback) {
-        if (obj && obj[fieldName] && obj[fieldName].data !== undefined) {
-            return obj[fieldName].data;
-        }
-        return fallback;
-    }
-
-    // Compute relative timestamp string
-    // dunstctl returns monotonic clock microseconds (from boot), not Unix epoch.
-    // We detect this by checking if the value is unreasonably old (> 7 days from "now").
-    // In that case, we display duration from zero reference as a best-effort fallback.
-    function relativeTime(unixTimestamp) {
-        if (unixTimestamp <= 0) return "";
-
-        // dunstctl timestamps are monotonic microseconds since boot
-        var timestampMs = unixTimestamp / 1000;
-        var now = Date.now();
-        var diffSec = Math.floor((now - timestampMs) / 1000);
-
-        // If result is nonsensical (e.g. "20000 days ago"), fall back to monotonic offset
-        if (diffSec < 0 || diffSec > 7 * 86400) {
-            // Treat timestamp as microseconds since boot; show duration from boot
-            var bootSec = Math.floor(timestampMs / 1000);
-            if (bootSec < 60) return "just now";
-            if (bootSec < 3600) {
-                var bmins = Math.floor(bootSec / 60);
-                return bmins + (bmins === 1 ? " min" : " mins") + " after boot";
-            }
-            var bhours = Math.floor(bootSec / 3600);
-            return bhours + (bhours === 1 ? " hr" : " hrs") + " after boot";
-        }
-
-        if (diffSec < 60) return "just now";
+    // Compute relative timestamp string (uses Unix epoch ms from Date.now())
+    function relativeTime(timestampMs) {
+        if (!timestampMs || timestampMs <= 0) return ""
+        var diffSec = Math.floor((Date.now() - timestampMs) / 1000)
+        if (diffSec < 0)    return "just now"
+        if (diffSec < 60)   return "just now"
         if (diffSec < 3600) {
-            var mins = Math.floor(diffSec / 60);
-            return mins + (mins === 1 ? " min ago" : " mins ago");
+            var m = Math.floor(diffSec / 60)
+            return m + (m === 1 ? " min ago" : " mins ago")
         }
         if (diffSec < 86400) {
-            var hours = Math.floor(diffSec / 3600);
-            return hours + (hours === 1 ? " hour ago" : " hours ago");
+            var h = Math.floor(diffSec / 3600)
+            return h + (h === 1 ? " hour ago" : " hours ago")
         }
-        var days = Math.floor(diffSec / 86400);
-        return days + (days === 1 ? " day ago" : " days ago");
+        var d = Math.floor(diffSec / 86400)
+        return d + (d === 1 ? " day ago" : " days ago")
     }
 
-    // Public methods
+    // ── Public API (unchanged surface for NotificationCenter.qml) ────────
     function refresh() {
-        historyProcess.running = true;
+        // No-op: history is now maintained live in `notifications` array
     }
 
     function clearAll() {
-        clearProcess.running = true;
+        for (var id in root._notifMap) {
+            if (root._notifMap.hasOwnProperty(id))
+                root._notifMap[id].tracked = false
+        }
+        root._notifMap = {}
+        root.notifications = []
+        root._updateWaybar()
     }
 
     function removeNotification(notifId) {
-        removeProcess.command = ["dunstctl", "history-rm", String(notifId)];
-        removeProcess.running = true;
+        if (root._notifMap[notifId]) {
+            root._notifMap[notifId].tracked = false
+            delete root._notifMap[notifId]
+        }
+        root.notifications = root.notifications.filter(function(n) {
+            return n.id !== notifId
+        })
+        root._updateWaybar()
     }
 }

@@ -55,9 +55,9 @@ Scope {
                 width: contentRow.implicitWidth + 28 * 2
                 height: contentRow.implicitHeight + 24 * 2
                 radius: 20
-                // rgba(32, 34, 36, 0.82) — matches waybar window background tone
-                color: Qt.rgba(0.125, 0.133, 0.141, 0.82)
-                border.color: Qt.rgba(1, 1, 1, 0.08)
+                // Semi-transparent panel background — follows active theme
+                color: Qt.rgba(Root.Theme.panelBg.r, Root.Theme.panelBg.g, Root.Theme.panelBg.b, 0.82)
+                border.color: Root.Theme.panelBorder
                 border.width: 1
 
                 opacity: 0

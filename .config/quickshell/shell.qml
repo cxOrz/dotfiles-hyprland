@@ -41,6 +41,10 @@ ShellRoot {
         id: notificationCenter
     }
 
+    Notifications.NotificationToastLayer {
+        id: notificationToasts
+    }
+
     // --- Mutual Exclusivity ---
 
     Connections {
