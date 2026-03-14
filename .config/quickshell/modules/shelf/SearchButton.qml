@@ -20,7 +20,7 @@ Item {
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: Root.Theme.animFast
+                    duration: Root.Theme.animDurationFast
                 }
             }
         }

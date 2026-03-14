@@ -8,7 +8,7 @@ import "../.." as Root
 // WiFi: nmcli CLI polling
 // Bluetooth: bluetoothctl CLI polling
 // Battery: Conditional via /sys/class/power_supply/BAT0
-// Volume: Native Pipewire + wpctl CLI fallback
+// Volume: Native Pipewire
 // Clock: Timer-driven HH:mm
 Item {
     id: root
@@ -27,14 +27,14 @@ Item {
     property int batteryLevel: 0
     property bool batteryCharging: false
 
-    // ── Volume state — native Pipewire ──
-    readonly property var sink: Pipewire.defaultAudioSink
-    readonly property var audio: sink ? sink.audio : null
-    readonly property bool nativeAudio: audio !== null
-    readonly property real currentVolume: nativeAudio ? audio.volume : fallbackVolume
-    readonly property bool currentMuted: nativeAudio ? audio.muted : fallbackMuted
-    property real fallbackVolume: 0.5
-    property bool fallbackMuted: false
+    // ── Volume state (native Pipewire) ──
+    property var nativeAudio: Pipewire.defaultAudioSink
+    readonly property real currentVolume: nativeAudio && nativeAudio.audio ? nativeAudio.audio.volume : 0
+    readonly property bool currentMuted: nativeAudio && nativeAudio.audio ? nativeAudio.audio.muted : false
+
+    PwObjectTracker {
+        objects: [Pipewire.defaultAudioSink]
+    }
 
     // ── Clock ──
     property string timeText: Qt.formatDateTime(new Date(), "HH:mm")
@@ -68,13 +68,6 @@ Item {
         if (level <= 90) return "󰂂"
         return "󰁹"
     }
-
-    // ── Pipewire native tracker (REQUIRED for volume/muted reactivity) ──
-    PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
-    }
-
-    // ── Processes (ALL at root level — v0.2.1 requirement) ──
 
     // WiFi: nmcli CLI
     Process {
@@ -141,21 +134,6 @@ Item {
         }
     }
 
-    // Volume: wpctl CLI fallback (when native Pipewire unavailable)
-    Process {
-        id: wpctlProc
-        command: ["wpctl", "get-volume", "@DEFAULT_AUDIO_SINK@"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var match = text.match(/Volume:\s*([\d.]+)(\s*\[MUTED\])?/)
-                if (match) {
-                    root.fallbackVolume = Math.min(parseFloat(match[1]), 1.0)
-                    root.fallbackMuted = match[2] !== undefined
-                }
-            }
-        }
-    }
-
     // Control center toggle (click handler)
     Process {
         id: ccToggleProc
@@ -176,7 +154,6 @@ Item {
                 batteryReadProc.running = true
                 batteryStatusProc.running = true
             }
-            if (!root.nativeAudio) wpctlProc.running = true
         }
     }
 

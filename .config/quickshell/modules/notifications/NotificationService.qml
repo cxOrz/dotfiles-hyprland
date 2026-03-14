@@ -27,6 +27,7 @@ QtObject {
         onExited: function(exitCode, exitStatus) {
             if (exitCode === 0) {
                 root.notifications = [];
+                signalWaybar.running = true;
             }
         }
     }
@@ -38,8 +39,14 @@ QtObject {
         onExited: function(exitCode, exitStatus) {
             if (exitCode === 0) {
                 root.refresh();
+                signalWaybar.running = true;
             }
         }
+    }
+
+    // Signal waybar to refresh notification count immediately
+    property var signalWaybar: Process {
+        command: ["pkill", "-RTMIN+1", "waybar"]
     }
 
     // SocketServer for live updates from dunst hook — disabled in v0.2.1 (no onMessage API)

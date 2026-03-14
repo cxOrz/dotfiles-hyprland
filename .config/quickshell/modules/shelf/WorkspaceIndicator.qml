@@ -20,14 +20,14 @@ Row {
 
             Behavior on width {
                 NumberAnimation {
-                    duration: Root.Theme.animFast
+                    duration: Root.Theme.animDurationFast
                     easing.type: Easing.InOutQuad
                 }
             }
 
             Behavior on color {
                 ColorAnimation {
-                    duration: Root.Theme.animFast
+                    duration: Root.Theme.animDurationFast
                 }
             }
 

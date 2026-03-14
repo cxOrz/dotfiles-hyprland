@@ -189,10 +189,22 @@ Item {
         spacing: 0
 
         // ── Header ──────────────────────────────────────────────
-        Rectangle {
+        Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
-            color: Root.Theme.bgSecondary
+
+            // Top-rounded background: full-radius rect + bottom fill to square off bottom corners
+            Rectangle {
+                anchors.fill: parent
+                radius: Root.Theme.panelRadius
+                color: Root.Theme.surface
+            }
+            Rectangle {
+                anchors.left: parent.left; anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: Root.Theme.panelRadius
+                color: Root.Theme.surface
+            }
 
             RowLayout {
                 anchors.fill: parent
@@ -204,7 +216,7 @@ Item {
                 Rectangle {
                     width: 32; height: 32
                     radius: Root.Theme.radiusSmall
-                    color: backArea.containsMouse ? Root.Theme.bgTertiary : "transparent"
+                    color: backArea.containsMouse ? Root.Theme.surfaceContainerHigh : "transparent"
 
                     Text {
                         anchors.centerIn: parent
@@ -236,7 +248,7 @@ Item {
                 Rectangle {
                     width: 32; height: 32
                     radius: Root.Theme.radiusSmall
-                    color: refreshArea.containsMouse ? Root.Theme.bgTertiary : "transparent"
+                    color: refreshArea.containsMouse ? Root.Theme.surfaceContainerHigh : "transparent"
                     visible: wifiPanel.wifiEnabled
 
                     Text {
@@ -275,7 +287,7 @@ Item {
                 // Toggle switch
                 Rectangle {
                     width: 44; height: 24; radius: 12
-                    color: wifiPanel.wifiEnabled ? Root.Theme.accent : Root.Theme.bgTertiary
+                    color: wifiPanel.wifiEnabled ? Root.Theme.primary : Root.Theme.surfaceContainerHigh
                     Behavior on color { ColorAnimation { duration: 200 } }
 
                     Rectangle {
@@ -295,7 +307,7 @@ Item {
 
             Rectangle {
                 anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-                height: 1; color: Root.Theme.border
+                height: 1; color: Root.Theme.surfaceContainerHigh
             }
         }
 
@@ -305,7 +317,7 @@ Item {
             text: wifiPanel.errorMessage
             font.family: Root.Theme.fontFamily
             font.pixelSize: Root.Theme.fontSizeNormal
-            color: "#ff6b6b"
+            color: Root.Theme.error
             Layout.fillWidth: true
             Layout.leftMargin: Root.Theme.paddingNormal
             Layout.rightMargin: Root.Theme.paddingNormal
@@ -388,10 +400,10 @@ Item {
                             height: 52
                             radius: Root.Theme.radiusSmall
                             color: connected
-                                ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.15)
-                                : itemMA.containsMouse ? Root.Theme.bgTertiary : Root.Theme.bgSecondary
+                                ? Qt.rgba(Root.Theme.primaryContainer.r, Root.Theme.primaryContainer.g, Root.Theme.primaryContainer.b, 0.25)
+                                : itemMA.containsMouse ? Root.Theme.surfaceContainerHigh : Root.Theme.surfaceContainer
                             border.width: connected || showPass ? 1 : 0
-                            border.color: connected ? Root.Theme.accent : Root.Theme.accent
+                            border.color: connected ? Root.Theme.primary : Root.Theme.primary
 
                             RowLayout {
                                 anchors.fill: parent
@@ -403,7 +415,7 @@ Item {
                                     text: wifiPanel.signalIcon(signal)
                                     font.family: Root.Theme.fontFamily
                                     font.pixelSize: Root.Theme.fontSizeLarge
-                                    color: connected ? Root.Theme.accent : Root.Theme.textSecondary
+                                    color: connected ? Root.Theme.primary : Root.Theme.textSecondary
                                 }
 
                                 Text {
@@ -435,14 +447,14 @@ Item {
                                     implicitWidth: connLbl.implicitWidth + 12
                                     implicitHeight: 20
                                     radius: 10
-                                    color: Root.Theme.accent
+                                    color: Root.Theme.primary
                                     Text {
                                         id: connLbl
                                         anchors.centerIn: parent
                                         text: "Connected"
                                         font.family: Root.Theme.fontFamily
                                         font.pixelSize: Root.Theme.fontSizeXS
-                                        color: Root.Theme.textPrimary
+                                        color: Root.Theme.tileActiveText
                                     }
                                 }
                             }
@@ -479,9 +491,9 @@ Item {
                             width: parent.width - 2 * Root.Theme.paddingNormal
                             height: 88
                             radius: Root.Theme.radiusSmall
-                            color: Root.Theme.bgSecondary
+                            color: Root.Theme.surfaceContainerHigh
                             border.width: 1
-                            border.color: Root.Theme.accent
+                            border.color: Root.Theme.primary
 
                             ColumnLayout {
                                 anchors.fill: parent
@@ -493,9 +505,9 @@ Item {
                                     Layout.fillWidth: true
                                     height: 34
                                     radius: Root.Theme.radiusSmall
-                                    color: Root.Theme.bgTertiary
+                                    color: Root.Theme.surfaceContainerHigh
                                     border.width: passwordField.activeFocus ? 1 : 0
-                                    border.color: Root.Theme.accent
+                                    border.color: Root.Theme.primary
 
                                     TextField {
                                         id: passwordField
@@ -525,9 +537,9 @@ Item {
                                         Layout.fillWidth: true
                                         height: 28
                                         radius: Root.Theme.radiusSmall
-                                        color: cancelBtnMA.containsMouse ? Root.Theme.bgTertiary : "transparent"
+                                        color: cancelBtnMA.containsMouse ? Root.Theme.surfaceContainerHigh : "transparent"
                                         border.width: 1
-                                        border.color: Root.Theme.border
+                                        border.color: Root.Theme.surfaceContainerHigh
 
                                         Text {
                                             anchors.centerIn: parent
@@ -555,15 +567,15 @@ Item {
                                         height: 28
                                         radius: Root.Theme.radiusSmall
                                         color: connectBtnMA.containsMouse
-                                            ? Qt.lighter(Root.Theme.accent, 1.2)
-                                            : Root.Theme.accent
+                                            ? Qt.lighter(Root.Theme.primary, 1.2)
+                                            : Root.Theme.primary
 
                                         Text {
                                             anchors.centerIn: parent
-                                            text: "Connect"
-                                            font.family: Root.Theme.fontFamily
-                                            font.pixelSize: Root.Theme.fontSizeNormal
-                                            color: Root.Theme.textPrimary
+                                        text: "Connect"
+                                        font.family: Root.Theme.fontFamily
+                                        font.pixelSize: Root.Theme.fontSizeNormal
+                                        color: Root.Theme.tileActiveText
                                             font.weight: Font.DemiBold
                                         }
 

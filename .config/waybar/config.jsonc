@@ -13,6 +13,7 @@
   ],
   "modules-right": [
     "tray",
+    "custom/notifications",
     "custom/date",
     "clock",
     "pulseaudio",
@@ -26,6 +27,14 @@
     "on-click": "uwsm app -- rofi -show drun -run-command \"uwsm app -- {cmd}\"",
     "tooltip": false
   },
+  "custom/notifications": {
+    "exec": "~/.config/waybar/scripts/notifications",
+    "return-type": "json",
+    "interval": 5,
+    "signal": 1,
+    "on-click": "qs ipc call notifications toggle",
+    "tooltip": false
+  },
   "custom/date": {
     "format": "{}",
     "exec": "date +'%b %d'",
@@ -33,10 +42,12 @@
     "tooltip": false
   },
   "hyprland/window": {
-    "format": "{}"
+    "format": "{}",
+    "tooltip": false
   },
   "hyprland/workspaces": {
-    "sort-by": "name"
+    "sort-by": "name",
+    "tooltip": false
   },
   "tray": {
     "icon-size": 18,
@@ -53,12 +64,15 @@
     "format-ethernet": "",
     "format-linked": "󰄡",
     "format-disconnected": "",
+    "on-click": "qs ipc call controlcenter toggle",
+    "tooltip": false
   },
   "bluetooth": {
     "format": "󰂯",
     "format-disabled": "󰂲",
     "format-connected": "󰂱 {num_connections}",
-    "on-click": "bluetooth toggle"
+    "on-click": "qs ipc call controlcenter toggle",
+    "tooltip": false
   },
   "battery": {
     "full-at": 95,
@@ -67,7 +81,7 @@
       "critical": 10
     },
     "format": "{icon}",
-    "format-plugged": "",
+    "format-plugged": "",
     "format-charging": "󰂄",
     "format-icons": [
       "󰂎",
@@ -82,22 +96,19 @@
       "󰂂",
       "󰁹"
     ],
-  },
-  "custom/power": {
-    "format": "{}",
-    "exec": "ls /sys/class/power_supply/BAT* >/dev/null 2>&1 && echo '' || echo '󰁹'",
-    "interval": "once",
-  },
-  "temperature": {
-    "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
-    "input-filename": "temp1_input",
-    "format": " {temperatureC}°C",
-    "critical-threshold": 80
-  },
-  "pulseaudio": {
+     "on-click": "qs ipc call controlcenter toggle",
+     "tooltip": false
+   },
+   "custom/power": {
+     "format": "{}",
+     "exec": "ls /sys/class/power_supply/BAT* >/dev/null 2>&1 && echo '' || echo '󰁹'",
+     "interval": "once",
+     "tooltip": false
+   },
+   "pulseaudio": {
     "format": "{icon}",
     "format-muted": "󰝟",
-    "on-click": "wpctl set-mute @DEFAULT_SINK@ toggle",
+    "on-click": "qs ipc call controlcenter toggle",
     "on-click-right": "pavucontrol",
     "on-scroll-up": "wpctl set-volume -l 1.3 @DEFAULT_SINK@ 5%+",
     "on-scroll-down": "wpctl set-volume @DEFAULT_SINK@ 5%-",
@@ -109,32 +120,12 @@
       "default": [
         "",
         ""
-      ]
-    },
-  },
-  "clock": {
-    "format": "{:%H:%M}",
-  },
-  "backlight": {
-    "device": "intel_backlight",
-    "format": "{icon} {percent}%",
-    "format-icons": [
-      "󰃞",
-      "󰃟",
-      "󰃠"
-    ],
-    "on-scroll-up": "brightnessctl set 10%+",
-    "on-scroll-down": "brightnessctl set 10%-",
-    "min-length": 6
-  },
-  "pulseaudio#microphone": {
-    "format": "{format_source}",
-    "format-source": " {volume}%",
-    "format-source-muted": " Muted",
-    "on-click": "wpctl set-mute @DEFAULT_SOURCE@ toggle",
-    "on-click-right": "pavucontrol",
-    "on-scroll-up": "wpctl set-volume -l 1.3 @DEFAULT_SOURCE@ 5%+",
-    "on-scroll-down": "wpctl set-volume -l 1.3 @DEFAULT_SOURCE@ 5%-",
-    "scroll-step": 5
-  }
-}
+       ]
+     },
+     "tooltip": false
+   },
+   "clock": {
+     "format": "{:%H:%M}",
+     "tooltip": false
+   }
+ }

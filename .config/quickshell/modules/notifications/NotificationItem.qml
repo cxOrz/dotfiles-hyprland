@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../.." as Root
 
-// Single notification card component
+// Notification card — MD3 / Android 16 style
 // Used by NotificationCenter's ListView
 Item {
     id: notifItem
@@ -16,11 +16,10 @@ Item {
     property int timestamp: 0
     property string timeAgo: ""
 
-    // Signal when dismiss button is clicked
     signal dismissed(int notifId)
 
-    width: parent ? parent.width : 350
-    height: card.height + 6  // 6 = bottomMargin below
+    width: parent ? parent.width : 360
+    height: card.height + 8
 
     Rectangle {
         id: card
@@ -28,73 +27,71 @@ Item {
         anchors.right: parent.right
         anchors.leftMargin: Root.Theme.paddingNormal
         anchors.rightMargin: Root.Theme.paddingNormal
-        height: cardContent.implicitHeight + 20  // 10 top + 10 bottom padding
-        color: Root.Theme.bgSecondary
-        radius: Root.Theme.radiusSmall
-        border.width: 1
-        border.color: Root.Theme.border
-
-        // Urgency indicator — left colored border strip
-        Rectangle {
-            id: urgencyStrip
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: urgency === "CRITICAL" ? 4 : 0
-            color: urgency === "CRITICAL" ? Root.Theme.accent : "transparent"
-            radius: Root.Theme.radiusSmall
-            visible: urgency === "CRITICAL"
-        }
+        height: cardContent.implicitHeight + 24  // 12 top + 12 bottom
+        radius: 16
+        color: Root.Theme.surfaceContainer
+        border.width: urgency === "CRITICAL" ? 1 : 0
+        border.color: Root.Theme.error
 
         ColumnLayout {
             id: cardContent
-            anchors.left: urgencyStrip.right
+            anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.leftMargin: Root.Theme.paddingNormal
-            anchors.rightMargin: Root.Theme.paddingNormal
-            anchors.topMargin: 10
-            anchors.bottomMargin: 10
+            anchors.leftMargin: 16
+            anchors.rightMargin: 16
+            anchors.topMargin: 12
+            anchors.bottomMargin: 12
             spacing: 4
 
-            // Header row: app name + time + dismiss button
+            // ── Header: app name · time · dismiss ────────────
             RowLayout {
                 Layout.fillWidth: true
-                spacing: 8
+                spacing: 6
+
+                // Urgency dot
+                Rectangle {
+                    visible: urgency === "CRITICAL"
+                    width: 6; height: 6; radius: 3
+                    color: Root.Theme.error
+                    Layout.alignment: Qt.AlignVCenter
+                }
 
                 // App name
                 Text {
                     text: appName
                     color: Root.Theme.textSecondary
                     font.family: Root.Theme.fontFamily
-                    font.pixelSize: 10
+                    font.pixelSize: Root.Theme.fontSizeXS
                     font.weight: Font.Medium
+                    font.capitalization: Font.AllUppercase
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
 
-                // Relative timestamp
+                // Timestamp
                 Text {
                     text: timeAgo
-                    color: Root.Theme.textSecondary
+                    color: Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.6)
                     font.family: Root.Theme.fontFamily
-                    font.pixelSize: 10
+                    font.pixelSize: Root.Theme.fontSizeXS
                     visible: timeAgo !== ""
                 }
 
                 // Dismiss button
                 Rectangle {
-                    width: 18
-                    height: 18
-                    radius: 9
-                    color: dismissArea.containsMouse ? Root.Theme.bgTertiary : "transparent"
+                    width: 20; height: 20; radius: 10
+                    color: dismissArea.containsMouse
+                        ? Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.15)
+                        : "transparent"
+                    Behavior on color { ColorAnimation { duration: 100 } }
 
                     Text {
                         anchors.centerIn: parent
-                        text: "󰅖"  // nf-md-close
+                        text: "󰅖"
                         color: dismissArea.containsMouse ? Root.Theme.textPrimary : Root.Theme.textSecondary
                         font.family: Root.Theme.fontFamily
-                        font.pixelSize: 12
+                        font.pixelSize: 11
                     }
 
                     MouseArea {
@@ -107,7 +104,7 @@ Item {
                 }
             }
 
-            // Summary (title)
+            // ── Summary (title) ──────────────────────────────
             Text {
                 text: summary
                 color: Root.Theme.textPrimary
@@ -119,36 +116,34 @@ Item {
                 visible: summary !== ""
             }
 
-            // Body text (3-line clamp)
+            // ── Body text (3 lines max) ──────────────────────
             Text {
                 text: body
                 color: Root.Theme.textSecondary
                 font.family: Root.Theme.fontFamily
-                font.pixelSize: 11
+                font.pixelSize: 12
                 wrapMode: Text.WordWrap
                 maximumLineCount: 3
                 elide: Text.ElideRight
                 Layout.fillWidth: true
                 visible: body !== ""
+                lineHeight: 1.3
             }
 
-            // Bottom padding spacer
+            // Bottom spacing
             Item {
-                height: 4
+                height: 2
                 Layout.fillWidth: true
             }
         }
 
-        // Hover highlight
+        // Hover overlay
         Rectangle {
             anchors.fill: parent
-            color: "white"
-            opacity: cardHover.containsMouse ? 0.03 : 0
+            color: Root.Theme.textPrimary
+            opacity: cardHover.containsMouse ? 0.04 : 0
             radius: parent.radius
-
-            Behavior on opacity {
-                NumberAnimation { duration: 150 }
-            }
+            Behavior on opacity { NumberAnimation { duration: 120 } }
         }
 
         MouseArea {

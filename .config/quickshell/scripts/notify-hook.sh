@@ -23,3 +23,6 @@ JSON=$(printf '{"appname":"%s","summary":"%s","body":"%s","urgency":"%s","id":%s
         exec 3>&-
     fi
 } 2>/dev/null || true
+
+# Signal waybar to refresh notification count immediately
+pkill -RTMIN+1 waybar 2>/dev/null || true

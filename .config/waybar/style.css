@@ -1,4 +1,5 @@
 /* ===== ChromeOS Shelf — Waybar Theme ===== */
+@import "colors.css";
 
 * {
     font-family: "Roboto", "JetBrainsMono Nerd Font", sans-serif;
@@ -9,10 +10,10 @@
 
 /* ---------- Bar ---------- */
 window#waybar {
-    background-color: rgba(32, 33, 36, 0.80);
-    color: #e2e3e1;
+    background-color: alpha(@bg, 0.80);
+    color: @text;
     border-radius: 24px 24px 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid alpha(@text, 0.06);
     transition-property: background-color;
     transition-duration: 0.3s;
 }
@@ -25,13 +26,13 @@ window#waybar {
     padding: 0px 14px 0 9px;
     margin: 6px 2px 6px 6px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.10);
-    color: #e2e3e1;
+    background: alpha(@text, 0.10);
+    color: @text;
     transition: all 0.2s ease;
 }
 
 #custom-launcher:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: alpha(@text, 0.12);
 }
 
 /* Workspaces — pill indicators */
@@ -39,7 +40,7 @@ window#waybar {
     margin: 6px 4px;
     padding: 0 6px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.06);
+    background: alpha(@text, 0.06);
 }
 
 #workspaces button {
@@ -48,7 +49,7 @@ window#waybar {
     min-height: 8px;
     margin: 14px 4px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.25);
+    background: alpha(@text, 0.25);
     transition: all 0.3s ease;
 }
 
@@ -60,20 +61,20 @@ window#waybar {
 }
 
 #workspaces button:hover {
-    background: rgba(255, 255, 255, 0.40);
+    background: alpha(@text, 0.40);
 }
 
 #workspaces button.active,
 #workspaces button.active:hover {
     min-width: 8px;
     border-radius: 50%;
-    background: #8ab4f8;
+    background: @accent;
 }
 
 /* ========== CENTER MODULE ========== */
 
 #window {
-    color: rgba(226, 227, 225, 0.85);
+    color: alpha(@text, 0.85);
     font-size: 14px;
 }
 
@@ -93,18 +94,37 @@ window#waybar {
     -gtk-icon-effect: highlight;
 }
 
+/* ----- Notification bell (standalone pill) ----- */
+#custom-notifications {
+    padding: 1px 14px 0;
+    margin: 6px 4px;
+    border-radius: 18px;
+    background: alpha(@text, 0.08);
+    color: @text;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+#custom-notifications:hover {
+    background: alpha(@text, 0.12);
+}
+
+#custom-notifications.has-notifs {
+    color: @text;
+}
+
 /* ----- Date pill (standalone) ----- */
 #custom-date {
     padding: 1px 16px 0;
     margin: 6px 4px;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.08);
-    color: #e2e3e1;
+    background: alpha(@text, 0.08);
+    color: @text;
     font-size: 14px;
 }
 
 #custom-date:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: alpha(@text, 0.12);
 }
 
 /* ----- System status pill group: clock | audio | net | bt | battery/power ----- */
@@ -117,8 +137,8 @@ window#waybar {
     padding: 1px 10px 0;
     margin-top: 6px;
     margin-bottom: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    color: #e2e3e1;
+    background: alpha(@text, 0.08);
+    color: @text;
     transition: background 0.2s ease;
 }
 
@@ -128,7 +148,7 @@ window#waybar {
 #bluetooth:hover,
 #battery:hover,
 #custom-power:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: alpha(@text, 0.12);
 }
 
 /* First in group — left rounded */
@@ -149,25 +169,25 @@ window#waybar {
 /* ========== STATE VARIANTS ========== */
 
 #battery.warning {
-    color: #fbbc04;
+    color: @warning;
 }
 
 #battery.critical {
-    color: #ea4335;
+    color: @critical;
 }
 
 #battery.charging {
-    color: #34a853;
+    color: @charging;
 }
 
 #network.disconnected {
-    color: rgba(226, 227, 225, 0.40);
+    color: alpha(@text, 0.40);
 }
 
 #bluetooth.disabled {
-    color: rgba(226, 227, 225, 0.30);
+    color: alpha(@text, 0.30);
 }
 
 #pulseaudio.muted {
-    color: rgba(226, 227, 225, 0.40);
+    color: alpha(@text, 0.40);
 }

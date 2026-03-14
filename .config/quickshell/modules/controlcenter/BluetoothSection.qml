@@ -237,10 +237,22 @@ Item {
 
 
         // ── Header ──────────────────────────────────────────────────
-        Rectangle {
+        Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 56
-            color: Root.Theme.bgSecondary
+
+            // Top-rounded background: full-radius rect + bottom fill to square off bottom corners
+            Rectangle {
+                anchors.fill: parent
+                radius: Root.Theme.panelRadius
+                color: Root.Theme.surface
+            }
+            Rectangle {
+                anchors.left: parent.left; anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: Root.Theme.panelRadius
+                color: Root.Theme.surface
+            }
 
             RowLayout {
                 anchors.fill: parent
@@ -252,7 +264,7 @@ Item {
                 Rectangle {
                     width: 34; height: 34
                     radius: 17
-                    color: btBackArea.containsMouse ? Root.Theme.bgTertiary : Qt.rgba(Root.Theme.bgTertiary.r, Root.Theme.bgTertiary.g, Root.Theme.bgTertiary.b, 0.4)
+                    color: btBackArea.containsMouse ? Root.Theme.surfaceContainerHigh : Qt.rgba(Root.Theme.surfaceContainerHigh.r, Root.Theme.surfaceContainerHigh.g, Root.Theme.surfaceContainerHigh.b, 0.4)
                     Behavior on color { ColorAnimation { duration: 120 } }
 
                     Text {
@@ -286,7 +298,7 @@ Item {
                     visible: bt.enabled
                     width: 34; height: 34
                     radius: 17
-                    color: scanBtnMA.containsMouse ? Root.Theme.bgTertiary : Qt.rgba(Root.Theme.bgTertiary.r, Root.Theme.bgTertiary.g, Root.Theme.bgTertiary.b, 0.4)
+                    color: scanBtnMA.containsMouse ? Root.Theme.surfaceContainerHigh : Qt.rgba(Root.Theme.surfaceContainerHigh.r, Root.Theme.surfaceContainerHigh.g, Root.Theme.surfaceContainerHigh.b, 0.4)
                     Behavior on color { ColorAnimation { duration: 120 } }
 
                     Text {
@@ -295,7 +307,7 @@ Item {
                         text: "\u{f0450}"
                         font.family: Root.Theme.fontFamily
                         font.pixelSize: 14
-                        color: bt.discoveryScanning ? Root.Theme.accent : Root.Theme.textSecondary
+                        color: bt.discoveryScanning ? Root.Theme.primary : Root.Theme.textSecondary
                     }
 
                     RotationAnimation {
@@ -319,9 +331,9 @@ Item {
                 // Toggle switch
                 Rectangle {
                     width: 44; height: 24; radius: 12
-                    color: bt.enabled ? Root.Theme.accent : Root.Theme.bgTertiary
+                    color: bt.enabled ? Root.Theme.primary : Root.Theme.surfaceContainerHigh
                     border.width: 1
-                    border.color: bt.enabled ? Root.Theme.accent : Root.Theme.border
+                    border.color: bt.enabled ? Root.Theme.primary : Root.Theme.surfaceContainerHigh
                     Behavior on color { ColorAnimation { duration: 200 } }
 
                     Rectangle {
@@ -345,7 +357,7 @@ Item {
             // Bottom border
             Rectangle {
                 anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-                height: 1; color: Root.Theme.border
+                height: 1; color: Root.Theme.surfaceContainerHigh
             }
         }
 
@@ -409,7 +421,7 @@ Item {
                 text: bt.error
                 font.family: Root.Theme.fontFamily
                 font.pixelSize: Root.Theme.fontSizeSmall
-                color: "#ff6b6b"
+                color: Root.Theme.error
                 wrapMode: Text.Wrap
                 width: parent.width - 16
                 horizontalAlignment: Text.AlignHCenter
@@ -426,7 +438,7 @@ Item {
             Rectangle {
                 Layout.alignment: Qt.AlignHCenter
                 width: 56; height: 56; radius: 28
-                color: Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.1)
+                color: Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.1)
 
                 Text {
                     id: scanPlaceholderIcon
@@ -434,7 +446,7 @@ Item {
                     text: "\u{f0450}"
                     font.family: Root.Theme.fontFamily
                     font.pixelSize: 24
-                    color: Root.Theme.accent
+                    color: Root.Theme.primary
                     opacity: 0.7
                 }
 
@@ -556,15 +568,15 @@ Item {
                         radius: Root.Theme.radiusSmall
                         color: dma.containsMouse
                             ? (connected
-                                ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.18)
-                                : Root.Theme.bgTertiary)
+                                ? Qt.rgba(Root.Theme.primaryContainer.r, Root.Theme.primaryContainer.g, Root.Theme.primaryContainer.b, 0.25)
+                                : Root.Theme.surfaceContainerHigh)
                             : (connected
-                                ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.10)
-                                : Root.Theme.bgSecondary)
+                                ? Qt.rgba(Root.Theme.primaryContainer.r, Root.Theme.primaryContainer.g, Root.Theme.primaryContainer.b, 0.15)
+                                : Root.Theme.surfaceContainer)
                         border.width: 1
                         border.color: connected
-                            ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.3)
-                            : Qt.rgba(Root.Theme.border.r, Root.Theme.border.g, Root.Theme.border.b, 0.5)
+                            ? Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.3)
+                            : Qt.rgba(Root.Theme.surfaceContainerHigh.r, Root.Theme.surfaceContainerHigh.g, Root.Theme.surfaceContainerHigh.b, 0.5)
 
                         Behavior on color { ColorAnimation { duration: 120 } }
                         Behavior on border.color { ColorAnimation { duration: 120 } }
@@ -581,7 +593,7 @@ Item {
                                 Layout.preferredHeight: 34
                                 radius: 17
                                 color: connected
-                                    ? Root.Theme.accent
+                                    ? Root.Theme.primary
                                     : Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.12)
                                 Behavior on color { ColorAnimation { duration: 200 } }
 
@@ -590,7 +602,7 @@ Item {
                                     text: "\u{f00af}"
                                     font.family: Root.Theme.fontFamily
                                     font.pixelSize: 15
-                                    color: connected ? "#ffffff" : Root.Theme.textSecondary
+                                    color: connected ? Root.Theme.tileActiveText : Root.Theme.textSecondary
                                 }
                             }
 
@@ -614,7 +626,7 @@ Item {
                                     font.family: Root.Theme.fontFamily
                                     font.pixelSize: Root.Theme.fontSizeXS
                                     color: connected
-                                        ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.85)
+                                        ? Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.85)
                                         : Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.5)
                                     Layout.fillWidth: true
                                 }
@@ -626,12 +638,12 @@ Item {
                                 implicitHeight: 28
                                 radius: 14
                                 color: actionMA.containsMouse
-                                    ? (connected ? Qt.rgba(1, 0.42, 0.42, 0.15) : Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.2))
-                                    : (connected ? Qt.rgba(1, 0.42, 0.42, 0.08) : Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.1))
+                                    ? (connected ? Qt.rgba(1, 0.42, 0.42, 0.15) : Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.2))
+                                    : (connected ? Qt.rgba(1, 0.42, 0.42, 0.08) : Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.1))
                                 border.width: 1
                                 border.color: connected
                                     ? Qt.rgba(1, 0.42, 0.42, 0.3)
-                                    : Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.3)
+                                    : Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.3)
 
                                 Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -642,7 +654,7 @@ Item {
                                     font.family: Root.Theme.fontFamily
                                     font.pixelSize: Root.Theme.fontSizeXS
                                     font.weight: Font.Medium
-                                    color: connected ? "#ff6b6b" : Root.Theme.accent
+                                    color: connected ? Root.Theme.error : Root.Theme.primary
                                 }
 
                                 MouseArea {
@@ -682,11 +694,11 @@ Item {
                     implicitHeight: pairStatusText.implicitHeight + 14
                     radius: Root.Theme.radiusSmall
                     color: bt.pairStatus.includes("failed") ? Qt.rgba(1, 0.42, 0.42, 0.1)
-                         : bt.pairStatus.includes("successfully") ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.1)
+                         : bt.pairStatus.includes("successfully") ? Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.1)
                          : Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.08)
                     border.width: 1
                     border.color: bt.pairStatus.includes("failed") ? Qt.rgba(1, 0.42, 0.42, 0.25)
-                               : bt.pairStatus.includes("successfully") ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.25)
+                               : bt.pairStatus.includes("successfully") ? Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.25)
                                : Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.15)
 
                     Text {
@@ -695,8 +707,8 @@ Item {
                         text: bt.pairStatus
                         font.family: Root.Theme.fontFamily
                         font.pixelSize: Root.Theme.fontSizeSmall
-                        color: bt.pairStatus.includes("failed") ? "#ff6b6b"
-                             : bt.pairStatus.includes("successfully") ? Root.Theme.accent
+                        color: bt.pairStatus.includes("failed") ? Root.Theme.error
+                             : bt.pairStatus.includes("successfully") ? Root.Theme.primary
                              : Root.Theme.textSecondary
                         width: parent.width - 16
                         horizontalAlignment: Text.AlignHCenter
@@ -732,7 +744,7 @@ Item {
                         anchors.leftMargin: Root.Theme.paddingNormal
                         anchors.rightMargin: Root.Theme.paddingNormal
                         height: 1
-                        color: Root.Theme.border
+                        color: Root.Theme.surfaceContainerHigh
                     }
                 }
 
@@ -764,9 +776,9 @@ Item {
                         Layout.rightMargin: Root.Theme.paddingNormal
                         implicitHeight: 56
                         radius: Root.Theme.radiusSmall
-                        color: uma.containsMouse ? Root.Theme.bgTertiary : Root.Theme.bgSecondary
+                        color: uma.containsMouse ? Root.Theme.surfaceContainerHigh : Root.Theme.surfaceContainer
                         border.width: 1
-                        border.color: Qt.rgba(Root.Theme.border.r, Root.Theme.border.g, Root.Theme.border.b, 0.5)
+                        border.color: Qt.rgba(Root.Theme.surfaceContainerHigh.r, Root.Theme.surfaceContainerHigh.g, Root.Theme.surfaceContainerHigh.b, 0.5)
 
                         Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -821,14 +833,14 @@ Item {
                                 implicitWidth: pairLbl.implicitWidth + 18
                                 implicitHeight: 28
                                 radius: 14
-                                color: bt.pairingMAC === mac ? Root.Theme.accent
+                                color: bt.pairingMAC === mac ? Root.Theme.primary
                                     : pairMA.containsMouse
-                                        ? Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.2)
-                                        : Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.1)
+                                        ? Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.2)
+                                        : Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.1)
                                 border.width: 1
                                 border.color: bt.pairingMAC === mac
-                                    ? Root.Theme.accent
-                                    : Qt.rgba(Root.Theme.accent.r, Root.Theme.accent.g, Root.Theme.accent.b, 0.3)
+                                    ? Root.Theme.primary
+                                    : Qt.rgba(Root.Theme.primary.r, Root.Theme.primary.g, Root.Theme.primary.b, 0.3)
 
                                 Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -839,7 +851,7 @@ Item {
                                     font.family: Root.Theme.fontFamily
                                     font.pixelSize: Root.Theme.fontSizeXS
                                     font.weight: Font.Medium
-                                    color: bt.pairingMAC === mac ? "#ffffff" : Root.Theme.accent
+                                    color: bt.pairingMAC === mac ? Root.Theme.textPrimary : Root.Theme.primary
                                 }
 
                                 MouseArea {
