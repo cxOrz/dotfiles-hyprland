@@ -44,6 +44,6 @@ Item {
 
     Process {
         id: rofiProc
-        command: ["uwsm", "app", "--", "rofi", "-show", "drun", "-run-command", "uwsm app -- {cmd}"]
+        command: ["rofi", "-show", "drun", "-theme", "/home/mcx/.config/rofi/themes/launcher.rasi"]
     }
 }

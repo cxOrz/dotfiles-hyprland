@@ -96,7 +96,7 @@ window#waybar {
 
 /* ----- Notification bell (standalone pill) ----- */
 #custom-notifications {
-    padding: 1px 14px 0;
+    padding: 1px 15px 0 12px;
     margin: 6px 4px;
     border-radius: 18px;
     background: alpha(@text, 0.08);

@@ -24,7 +24,7 @@
   ],
   "custom/launcher": {
     "format": "󰪥",
-    "on-click": "uwsm app -- rofi -show drun -run-command \"uwsm app -- {cmd}\"",
+    "on-click": "rofi -show drun -theme ~/.config/rofi/themes/launcher.rasi",
     "tooltip": false
   },
   "custom/notifications": {

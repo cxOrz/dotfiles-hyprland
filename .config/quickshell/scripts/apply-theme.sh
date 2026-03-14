@@ -13,6 +13,10 @@ case "$THEME" in
     CHARGING="#86D5A0"
     BORDER_ACTIVE="9BBDE8cc"
     BORDER_INACTIVE="2E3148aa"
+    SURFACE_CONTAINER="#252740"
+    SURFACE_CONTAINER_HIGH="#2E3148"
+    SURFACE_BRIGHT="#3A3E60"
+    TEXT_SECONDARY="#8E90A8"
     KITTY_BG="#0F1117"
     KITTY_FG="#E0E2F0"
     KITTY_CURSOR="#9BBDE8"
@@ -34,16 +38,6 @@ case "$THEME" in
     KITTY_COLOR13="#D8B8F8"
     KITTY_COLOR14="#A0E0F5"
     KITTY_COLOR15="#FFFFFF"
-    DUNST_NORMAL_BG="#1A1C28D9"
-    DUNST_NORMAL_FG="#E0E2F0"
-    DUNST_FRAME="#9BBDE8"
-    DUNST_LOW_BG="#1A1C28B3"
-    DUNST_LOW_FG="#8E90A8"
-    DUNST_WARN_BG="#0F1117"
-    DUNST_WARN_FG="#F2D479"
-    DUNST_CRIT_BG="#F2A8B8"
-    DUNST_CRIT_FG="#0F1117"
-    DUNST_CRIT_FRAME="#F2A8B8"
     ;;
   md3-sage-forest)
     BG="#0D1410"
@@ -54,6 +48,10 @@ case "$THEME" in
     CHARGING="#72CAD0"
     BORDER_ACTIVE="7EC996cc"
     BORDER_INACTIVE="2A3D2Daa"
+    SURFACE_CONTAINER="#203028"
+    SURFACE_CONTAINER_HIGH="#2A3D2D"
+    SURFACE_BRIGHT="#385045"
+    TEXT_SECONDARY="#8AAE92"
     KITTY_BG="#0D1410"
     KITTY_FG="#DCF0E2"
     KITTY_CURSOR="#7EC996"
@@ -75,17 +73,7 @@ case "$THEME" in
     KITTY_COLOR13="#C0B0E8"
     KITTY_COLOR14="#80E0D8"
     KITTY_COLOR15="#FFFFFF"
-    DUNST_NORMAL_BG="#172219D9"
-    DUNST_NORMAL_FG="#DCF0E2"
-    DUNST_FRAME="#7EC996"
-    DUNST_LOW_BG="#172219B3"
-    DUNST_LOW_FG="#8AAE92"
-    DUNST_WARN_BG="#0D1410"
-    DUNST_WARN_FG="#EDD678"
-    DUNST_CRIT_BG="#F2A8A8"
-    DUNST_CRIT_FG="#0D1410"
-    DUNST_CRIT_FRAME="#F2A8A8"
-    ;;
+  ;;
   md3-rose-quartz)
     BG="#170E12"
     TEXT="#F0DEE5"
@@ -95,6 +83,10 @@ case "$THEME" in
     CHARGING="#A0C8F0"
     BORDER_ACTIVE="EEA8C0cc"
     BORDER_INACTIVE="4A2838aa"
+    SURFACE_CONTAINER="#381C2C"
+    SURFACE_CONTAINER_HIGH="#4A2838"
+    SURFACE_BRIGHT="#603050"
+    TEXT_SECONDARY="#A88090"
     KITTY_BG="#170E12"
     KITTY_FG="#F0DEE5"
     KITTY_CURSOR="#EEA8C0"
@@ -116,17 +108,7 @@ case "$THEME" in
     KITTY_COLOR13="#F8C8D8"
     KITTY_COLOR14="#B8E8F0"
     KITTY_COLOR15="#FFFFFF"
-    DUNST_NORMAL_BG="#281520D9"
-    DUNST_NORMAL_FG="#F0DEE5"
-    DUNST_FRAME="#EEA8C0"
-    DUNST_LOW_BG="#281520B3"
-    DUNST_LOW_FG="#A88090"
-    DUNST_WARN_BG="#170E12"
-    DUNST_WARN_FG="#F0D47A"
-    DUNST_CRIT_BG="#F5A0A8"
-    DUNST_CRIT_FG="#170E12"
-    DUNST_CRIT_FRAME="#F5A0A8"
-    ;;
+  ;;
   md3-amethyst)
     BG="#110E18"
     TEXT="#E8E0F5"
@@ -136,6 +118,10 @@ case "$THEME" in
     CHARGING="#86D0C0"
     BORDER_ACTIVE="C8B0F0cc"
     BORDER_INACTIVE="3A3050aa"
+    SURFACE_CONTAINER="#2C2440"
+    SURFACE_CONTAINER_HIGH="#3A3050"
+    SURFACE_BRIGHT="#504068"
+    TEXT_SECONDARY="#9A90B8"
     KITTY_BG="#110E18"
     KITTY_FG="#E8E0F5"
     KITTY_CURSOR="#C8B0F0"
@@ -157,17 +143,7 @@ case "$THEME" in
     KITTY_COLOR13="#E0D0FF"
     KITTY_COLOR14="#A0E0F0"
     KITTY_COLOR15="#FFFFFF"
-    DUNST_NORMAL_BG="#1E1A2CD9"
-    DUNST_NORMAL_FG="#E8E0F5"
-    DUNST_FRAME="#C8B0F0"
-    DUNST_LOW_BG="#1E1A2CB3"
-    DUNST_LOW_FG="#9A90B8"
-    DUNST_WARN_BG="#110E18"
-    DUNST_WARN_FG="#F0D478"
-    DUNST_CRIT_BG="#F5A0A8"
-    DUNST_CRIT_FG="#110E18"
-    DUNST_CRIT_FRAME="#F5A0A8"
-    ;;
+  ;;
   md3-amber-dusk)
     BG="#18120A"
     TEXT="#F0E8D5"
@@ -177,6 +153,10 @@ case "$THEME" in
     CHARGING="#90C890"
     BORDER_ACTIVE="F0B87Acc"
     BORDER_INACTIVE="483220aa"
+    SURFACE_CONTAINER="#382818"
+    SURFACE_CONTAINER_HIGH="#483220"
+    SURFACE_BRIGHT="#604030"
+    TEXT_SECONDARY="#A88860"
     KITTY_BG="#18120A"
     KITTY_FG="#F0E8D5"
     KITTY_CURSOR="#F0B87A"
@@ -198,17 +178,7 @@ case "$THEME" in
     KITTY_COLOR13="#E0B8E0"
     KITTY_COLOR14="#98D8D0"
     KITTY_COLOR15="#FFFFFF"
-    DUNST_NORMAL_BG="#281E10D9"
-    DUNST_NORMAL_FG="#F0E8D5"
-    DUNST_FRAME="#F0B87A"
-    DUNST_LOW_BG="#281E10B3"
-    DUNST_LOW_FG="#A88860"
-    DUNST_WARN_BG="#18120A"
-    DUNST_WARN_FG="#F0D050"
-    DUNST_CRIT_BG="#F0907A"
-    DUNST_CRIT_FG="#18120A"
-    DUNST_CRIT_FRAME="#F0907A"
-    ;;
+  ;;
   md3-arctic-mist)
     BG="#080F14"
     TEXT="#D8EEF5"
@@ -218,6 +188,10 @@ case "$THEME" in
     CHARGING="#90D4A8"
     BORDER_ACTIVE="7ECCE8cc"
     BORDER_INACTIVE="1E3848aa"
+    SURFACE_CONTAINER="#162838"
+    SURFACE_CONTAINER_HIGH="#1E3848"
+    SURFACE_BRIGHT="#2A4A60"
+    TEXT_SECONDARY="#7A9AA8"
     KITTY_BG="#080F14"
     KITTY_FG="#D8EEF5"
     KITTY_CURSOR="#7ECCE8"
@@ -239,22 +213,18 @@ case "$THEME" in
     KITTY_COLOR13="#C0B8F0"
     KITTY_COLOR14="#88E0F0"
     KITTY_COLOR15="#FFFFFF"
-    DUNST_NORMAL_BG="#101C26D9"
-    DUNST_NORMAL_FG="#D8EEF5"
-    DUNST_FRAME="#7ECCE8"
-    DUNST_LOW_BG="#101C26B3"
-    DUNST_LOW_FG="#7A9AA8"
-    DUNST_WARN_BG="#080F14"
-    DUNST_WARN_FG="#F0D478"
-    DUNST_CRIT_BG="#F2A8A8"
-    DUNST_CRIT_FG="#080F14"
-    DUNST_CRIT_FRAME="#F2A8A8"
     ;;
   *)
     echo "Unknown theme: $THEME"
     exit 1
     ;;
 esac
+
+# Helper: convert #RRGGBB to "R, G, B"
+hex_to_rgb() {
+    local hex="${1#\#}"
+    printf "%d, %d, %d" "0x${hex:0:2}" "0x${hex:2:2}" "0x${hex:4:2}"
+}
 
 # A) Write Waybar colors.css
 cat > "$HOME/.config/waybar/colors.css" << CSSEOF
@@ -299,24 +269,17 @@ kitty @ set-colors --all --configured "$KITTY_COLORS_FILE" 2>/dev/null || true
 hyprctl keyword general:col.active_border "rgba(${BORDER_ACTIVE})" 2>/dev/null || true
 hyprctl keyword general:col.inactive_border "rgba(${BORDER_INACTIVE})" 2>/dev/null || true
 
-# D) Apply Dunst colors
-awk -v low_bg="$DUNST_LOW_BG" -v low_fg="$DUNST_LOW_FG" \
-    -v norm_bg="$DUNST_NORMAL_BG" -v norm_fg="$DUNST_NORMAL_FG" \
-    -v crit_bg="$DUNST_CRIT_BG" -v crit_fg="$DUNST_CRIT_FG" -v crit_frame="$DUNST_CRIT_FRAME" \
-    -v frame="$DUNST_FRAME" \
-    'BEGIN { section = "global" }
-     /^\[urgency_low\]/ { section = "low" }
-     /^\[urgency_normal\]/ { section = "normal" }
-     /^\[urgency_critical\]/ { section = "critical" }
-     /^\[/ && !/^\[urgency/ { section = "other" }
-     section == "global" && /^\s*frame_color\s*=/ { print "    frame_color = \"" frame "\""; next }
-     section == "low" && /^\s*background\s*=/ { print "    background = \"" low_bg "\""; next }
-     section == "low" && /^\s*foreground\s*=/ { print "    foreground = \"" low_fg "\""; next }
-     section == "normal" && /^\s*background\s*=/ { print "    background = \"" norm_bg "\""; next }
-     section == "normal" && /^\s*foreground\s*=/ { print "    foreground = \"" norm_fg "\""; next }
-     section == "critical" && /^\s*background\s*=/ { print "    background = \"" crit_bg "\""; next }
-     section == "critical" && /^\s*foreground\s*=/ { print "    foreground = \"" crit_fg "\""; next }
-     section == "critical" && /^\s*frame_color\s*=/ { print "    frame_color = \"" crit_frame "\""; next }
-     { print }' \
-   "$HOME/.config/dunst/dunstrc" > /tmp/dunstrc.tmp \
-  && mv /tmp/dunstrc.tmp "$HOME/.config/dunst/dunstrc"
+# D) Write Rofi launcher colors
+cat > "$HOME/.config/rofi/themes/colors.rasi" << ROFIEOF
+* {
+    bg-panel:         rgba($(hex_to_rgb "$BG"), 80%);
+    bg-container:     rgba($(hex_to_rgb "$SURFACE_CONTAINER"), 80%);
+    bg-container-hi:  ${SURFACE_CONTAINER_HIGH};
+    bg-bright:        ${SURFACE_BRIGHT};
+    accent:           ${ACCENT};
+    accent-dim:       rgba($(hex_to_rgb "$ACCENT"), 18%);
+    text-primary:     ${TEXT};
+    text-secondary:   ${TEXT_SECONDARY};
+    separator-line:   rgba($(hex_to_rgb "$TEXT"), 10%);
+}
+ROFIEOF
