@@ -29,7 +29,7 @@ error()   { echo -e "${RED} ✗${NC} $1"; exit 1; }
 
 ask() {
     local prompt="$1" default="$2" result
-    echo -en "${CYAN} ?${NC} ${prompt} ${DIM}[${default}]${NC}: "
+    echo -en "${CYAN} ?${NC} ${prompt} ${DIM}[${default}]${NC}: " >&2
     read -r result
     echo "${result:-$default}"
 }
@@ -91,7 +91,7 @@ DEPS=(
     # Secrets & Auth
     seahorse gnome-keyring
     # Portals
-    xdg-desktop-portal-gtk xdg-desktop-portal-hyprland-git
+    xdg-desktop-portal-gtk xdg-desktop-portal-hyprland
     # Font
     ttf-jetbrains-mono-nerd
 )
