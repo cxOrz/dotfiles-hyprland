@@ -11,6 +11,7 @@
 .local/share/fcitx5/rime/user.yaml
 .local/share/fcitx5/rime/installation.yaml
 
+.config/fcitx5/config
 .config/fcitx5/profile
 .config/fcitx5/conf/cached_layouts
 .config/fcitx5/conf/notifications.conf

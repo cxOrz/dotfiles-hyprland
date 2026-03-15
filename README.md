@@ -2,17 +2,19 @@
 
 Hyrpland dotfiles for Arch Linux — Chrome OS style with Material Design 3.
 
-## Themes
+## Gallery
 
-| Cobalt Night | Sage Forest | Rose Quartz |
+| Desktop | Lock Screen | App Launcher |
 | :---: | :---: | :---: |
-| `md3-cobalt-night` | `md3-sage-forest` | `md3-rose-quartz` |
-| ![Cobalt Night](./examples/theme-cobalt-night.webp) | ![Sage Forest](./examples/theme-sage-forest.webp) | ![Rose Quartz](./examples/theme-rose-quartz.webp) |
+| ![Desktop](./examples/desktop.webp) | ![Lock Screen](./examples/lockscreen.webp) | ![App Launcher](./examples/app-launcher.webp) |
 
-| Amethyst | Amber Dusk | Arctic Mist |
+| Control Center | Notification | Theme Panel |
 | :---: | :---: | :---: |
-| `md3-amethyst` | `md3-amber-dusk` | `md3-arctic-mist` |
-| ![Amethyst](./examples/theme-amethyst.webp) | ![Amber Dusk](./examples/theme-amber-dusk.webp) | ![Arctic Mist](./examples/theme-arctic-mist.webp) |
+| ![Control Center](./examples/control-center.webp) | ![Notification](./examples/notification.webp) | ![Theme Panel](./examples/theme-panel.webp) |
+
+| Terminal | | |
+| :---: | :---: | :---: |
+| ![Kitty Theme](./examples/kitty-theme.webp) | | |
 
 
 ## Prerequisites
@@ -97,7 +99,6 @@ sudo systemctl enable greetd
 ├── .config/
 │   ├── dunst/              # Notification daemon
 │   ├── fcitx5/             # Chinese input method
-│   ├── flameshot/          # Screenshot tool
 │   ├── hypr/               # Hyprland window manager
 │   │   ├── hyprland.conf   #   Main config (keybinds, rules, appearance)
 │   │   ├── hyprlock.conf   #   Lock screen
@@ -117,7 +118,6 @@ sudo systemctl enable greetd
 │   ├── rofi/               # App launcher
 │   ├── uwsm/               # Wayland session environment
 │   ├── waybar/             # Status bar
-│   ├── wofi/               # Power menu (alternative)
 │   └── yazi/               # File manager
 ├── .local/share/
 │   └── fcitx5/             # Rime config & input themes
@@ -153,9 +153,9 @@ sudo systemctl enable greetd
 | `hyprpicker` | Color picker |
 | `hyprpolkitagent` | Authentication agent |
 | `feh` | Image viewer |
-| `flameshot` | Screenshot tool |
 | `grim` | Wayland screenshot utility |
 | `slurp` | Region selector |
+| `satty` | Screenshot annotation tool |
 | `rofi-wayland` | Application launcher |
 | `wl-clipboard` | Wayland clipboard |
 | `cliphist` | Clipboard history |

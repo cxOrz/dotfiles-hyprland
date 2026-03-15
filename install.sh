@@ -79,7 +79,7 @@ DEPS=(
     # Hyprland ecosystem
     hyprpaper hyprlock hyprpicker hyprpolkitagent
     # Screenshot & Image
-    feh flameshot grim slurp
+    feh grim slurp satty
     # Launcher
     rofi
     # Clipboard
@@ -211,7 +211,7 @@ echo ""
 # ═══════════════════════════════════════════════════════════════════
 # Step 5: Backup Existing Configs
 # ═══════════════════════════════════════════════════════════════════
-CONFIGS_TO_LINK=(dunst fcitx5 flameshot hypr kitty quickshell rofi uwsm waybar wofi yazi)
+CONFIGS_TO_LINK=(dunst fcitx5 hypr kitty quickshell rofi uwsm waybar yazi)
 BACKUP_NEEDED=false
 
 for dir in "${CONFIGS_TO_LINK[@]}"; do
