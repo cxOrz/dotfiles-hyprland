@@ -12,9 +12,9 @@ Hyrpland dotfiles for Arch Linux — Chrome OS style with Material Design 3.
 | :---: | :---: | :---: |
 | ![Control Center](./examples/control-center.webp) | ![Notification](./examples/notification.webp) | ![Theme Panel](./examples/theme-panel.webp) |
 
-| Terminal | | |
-| :---: | :---: | :---: |
-| ![Kitty Theme](./examples/kitty-theme.webp) | | |
+| Terminal |
+| :---: |
+| ![Kitty Theme](./examples/kitty-theme.webp) |
 
 
 ## Prerequisites
