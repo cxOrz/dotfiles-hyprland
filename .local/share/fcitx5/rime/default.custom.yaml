@@ -5,3 +5,4 @@ patch:
     switcher/hotkeys/=:
       - Control+Shift+grave
     ascii_composer/switch_key/Caps_Lock: commit_code
+    ascii_composer/switch_key/Shift_L: commit_code
