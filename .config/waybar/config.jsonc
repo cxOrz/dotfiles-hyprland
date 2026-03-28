@@ -24,7 +24,7 @@
   ],
   "custom/launcher": {
     "format": "󰪥",
-    "on-click": "rofi -show drun -theme ~/.config/rofi/themes/launcher.rasi",
+    "on-click": "qs ipc call launcher toggle",
     "tooltip": false
   },
   "custom/notifications": {

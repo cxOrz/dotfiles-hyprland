@@ -352,7 +352,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 220
+                                duration: 200
                                 easing.type: Easing.OutCubic
                             }
                         }
@@ -464,7 +464,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 220
+                                duration: 200
                                 easing.type: Easing.OutCubic
                             }
                         }
@@ -483,7 +483,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 220
+                                duration: 200
                                 easing.type: Easing.OutCubic
                             }
                         }
@@ -503,7 +503,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 220
+                                duration: 200
                                 easing.type: Easing.OutCubic
                             }
                         }

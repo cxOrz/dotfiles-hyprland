@@ -25,7 +25,7 @@ Item {
         id: appearAnim
         NumberAnimation {
             target: root; property: "_slideY"
-            to: 0; duration: 280; easing.type: Easing.OutCubic
+            to: 0; duration: 200; easing.type: Easing.OutCubic
         }
         NumberAnimation {
             target: root; property: "_opacity"

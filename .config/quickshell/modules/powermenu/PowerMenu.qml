@@ -69,11 +69,11 @@ Scope {
                     id: appearAnim
                     NumberAnimation {
                         target: contentBox; property: "opacity"
-                        to: 1; duration: 180; easing.type: Easing.OutCubic
+                        to: 1; duration: 200; easing.type: Easing.OutCubic
                     }
                     NumberAnimation {
                         target: contentBox; property: "scale"
-                        to: 1; duration: 180; easing.type: Easing.OutCubic
+                        to: 1; duration: 200; easing.type: Easing.OutCubic
                     }
                 }
 

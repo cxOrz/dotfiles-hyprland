@@ -5,6 +5,7 @@ import Quickshell.Io
 import "modules/powermenu" as PowerMenu
 import "modules/controlcenter" as ControlCenter
 import "modules/notifications" as Notifications
+import "modules/launcher" as Launcher
 
 ShellRoot {
     id: root
@@ -45,6 +46,10 @@ ShellRoot {
         id: notificationToasts
     }
 
+    Launcher.Launcher {
+        id: appLauncher
+    }
+
     // --- Mutual Exclusivity ---
 
     Connections {
@@ -53,6 +58,7 @@ ShellRoot {
             if (powerMenu.menuOpen) {
                 controlCenter.panelVisible = false;
                 notificationCenter.panelVisible = false;
+                appLauncher.panelVisible = false;
             }
         }
     }
@@ -63,6 +69,7 @@ ShellRoot {
             if (controlCenter.panelVisible) {
                 powerMenu.menuOpen = false;
                 notificationCenter.panelVisible = false;
+                appLauncher.panelVisible = false;
             }
         }
     }
@@ -73,6 +80,18 @@ ShellRoot {
             if (notificationCenter.panelVisible) {
                 powerMenu.menuOpen = false;
                 controlCenter.panelVisible = false;
+                appLauncher.panelVisible = false;
+            }
+        }
+    }
+
+    Connections {
+        target: appLauncher
+        function onPanelVisibleChanged() {
+            if (appLauncher.panelVisible) {
+                powerMenu.menuOpen = false;
+                controlCenter.panelVisible = false;
+                notificationCenter.panelVisible = false;
             }
         }
     }

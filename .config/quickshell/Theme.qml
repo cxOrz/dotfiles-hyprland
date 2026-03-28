@@ -175,8 +175,8 @@ QtObject {
     readonly property int spacingLarge: 16
 
      // ── Animation durations (ms) ───────────────────────────────────
-    readonly property int animDuration: 250
-    readonly property int animDurationFast: 150
+    readonly property int animDuration: 200
+    readonly property int animDurationFast: 200
 
     // ── Theme metadata access ──────────────────────────────────────
     readonly property string themeName: _t.name
