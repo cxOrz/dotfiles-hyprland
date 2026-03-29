@@ -34,7 +34,10 @@ Scope {
         }
     }
 
-    Component.onCompleted: iconResolveProc.running = true
+    Component.onCompleted: {
+        iconResolveProc.running = true;
+        recentReadProc.running = true;
+    }
 
     function resolveIcon(iconName) {
         if (!iconName || iconName === "") return "";
@@ -42,6 +45,65 @@ Scope {
         var path = iconCache[iconName];
         if (path) return "file://" + path;
         return "";
+    }
+
+    // ── Recent apps ──────────────────────────────────────────────
+    property var recentAppNames: []
+    property int maxRecent: 5
+
+    Process {
+        id: recentReadProc
+        command: ["/bin/sh", "-c", "mkdir -p ~/.cache/quickshell && cat ~/.cache/quickshell/recent-apps.txt 2>/dev/null || true"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var names = [];
+                if (text.trim() !== "") {
+                    var lines = text.trim().split("\n");
+                    for (var i = 0; i < lines.length && i < launcher.maxRecent; i++) {
+                        var n = lines[i].trim();
+                        if (n !== "") names.push(n);
+                    }
+                }
+                launcher.recentAppNames = names;
+            }
+        }
+    }
+
+    function recordRecentApp(appName) {
+        var names = recentAppNames.slice();
+        // Remove duplicate
+        var idx = names.indexOf(appName);
+        if (idx >= 0) names.splice(idx, 1);
+        // Prepend
+        names.unshift(appName);
+        // Trim
+        if (names.length > maxRecent) names = names.slice(0, maxRecent);
+        recentAppNames = names;
+        // Write to file
+        recentWriteProc.command = ["/bin/sh", "-c",
+            "mkdir -p ~/.cache/quickshell && printf '%s\\n' " +
+            names.map(function(n) { return "'" + n.replace(/'/g, "'\\''") + "'"; }).join(" ") +
+            " > ~/.cache/quickshell/recent-apps.txt"];
+        recentWriteProc.running = true;
+    }
+
+    Process { id: recentWriteProc }
+
+    // Map recent names back to plain data objects {name, icon, entry}
+    // (plain JS objects avoid QObject property access issues from inside Loader)
+    property var recentApps: {
+        var result = [];
+        var names = recentAppNames;
+        for (var i = 0; i < names.length; i++) {
+            for (var j = 0; j < allApps.length; j++) {
+                if (allApps[j].name === names[i]) {
+                    var e = allApps[j];
+                    result.push({ name: e.name, icon: e.icon, entry: e });
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     // ── Filtered app list ────────────────────────────────────────
@@ -74,6 +136,13 @@ Scope {
             }
             return false;
         });
+    }
+
+    // Launch app and record it
+    function launchApp(entry) {
+        recordRecentApp(entry.name);
+        entry.execute();
+        panelVisible = false;
     }
 
     onPanelVisibleChanged: {
@@ -293,23 +362,21 @@ Scope {
                                         text: "Search your apps..."
                                         font: searchInput.font
                                         color: Root.Theme.textSecondary
-                                        visible: !searchInput.text && !searchInput.activeFocus
+                                        visible: !searchInput.text
                                         verticalAlignment: Text.AlignVCenter
                                     }
 
                                     Keys.onReturnPressed: {
                                         if (launcher.filteredApps.length > 0) {
-                                            launcher.filteredApps[0].execute();
-                                            launcher.panelVisible = false;
+                                            launcher.launchApp(launcher.filteredApps[0]);
                                         }
                                     }
                                 }
                             }
                         }
 
-                        // ── App grid ─────────────────────────────
+                        // ── Scrollable content (recent apps + app grid) ─
                         Item {
-                            id: appGridContainer
                             Layout.fillWidth: true
                             Layout.fillHeight: true
 
@@ -317,32 +384,72 @@ Scope {
                                 id: appFlickable
                                 anchors.fill: parent
                                 contentWidth: width
-                                contentHeight: appGrid.height
+                                contentHeight: scrollContent.height
                                 clip: true
                                 boundsBehavior: Flickable.StopAtBounds
                                 flickDeceleration: 3000
 
-                                Flow {
-                                    id: appGrid
+                                Column {
+                                    id: scrollContent
                                     width: appFlickable.width
+                                    spacing: 8
 
-                                    property int columns: panel.columns
-                                    property real cellWidth: width / columns
+                                    // ── Recent apps section (only when not searching) ─
+                                    Column {
+                                        width: parent.width
+                                        spacing: 8
+                                        visible: launcher.recentApps.length > 0 && launcher.searchText === ""
 
-                                    Repeater {
-                                        model: launcher.filteredApps.length
+                                        Text {
+                                            text: "Recent"
+                                            font.pixelSize: 12
+                                            font.family: Root.Theme.fontFamily
+                                            color: Root.Theme.textSecondary
+                                        }
 
-                                        Item {
-                                            width: appGrid.cellWidth
-                                            height: 126
+                                        Row {
+                                            spacing: 4
 
-                                            AppIcon {
-                                                anchors.centerIn: parent
-                                                appName: launcher.filteredApps[index].name
-                                                iconSource: launcher.resolveIcon(launcher.filteredApps[index].icon)
-                                                onClicked: {
-                                                    launcher.filteredApps[index].execute();
-                                                    launcher.panelVisible = false;
+                                            Repeater {
+                                                model: launcher.recentApps
+
+                                                AppIcon {
+                                                    required property var modelData
+                                                    appName: modelData.name
+                                                    iconSource: launcher.resolveIcon(modelData.icon)
+                                                    onClicked: launcher.launchApp(modelData.entry)
+                                                }
+                                            }
+                                        }
+
+                                        // Separator
+                                        Rectangle {
+                                            width: parent.width
+                                            height: 1
+                                            color: Qt.rgba(Root.Theme.textSecondary.r, Root.Theme.textSecondary.g, Root.Theme.textSecondary.b, 0.3)
+                                        }
+                                    }
+
+                                    // ── App grid ─────────────────────────
+                                    Flow {
+                                        id: appGrid
+                                        width: parent.width
+
+                                        property real cellWidth: width / panel.columns
+
+                                        Repeater {
+                                            model: launcher.filteredApps
+
+                                            Item {
+                                                required property var modelData
+                                                width: appGrid.cellWidth
+                                                height: 126
+
+                                                AppIcon {
+                                                    anchors.centerIn: parent
+                                                    appName: modelData.name
+                                                    iconSource: launcher.resolveIcon(modelData.icon)
+                                                    onClicked: launcher.launchApp(modelData)
                                                 }
                                             }
                                         }
