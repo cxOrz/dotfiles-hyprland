@@ -11,6 +11,8 @@ Item {
     required property string appName
     required property string iconSource
 
+    property bool isSelected: false
+
     signal clicked()
 
     // ── Hover / selected background (white translucent rounded rect) ─
@@ -21,7 +23,7 @@ Item {
         radius: 16
         color: mouseArea.pressed
             ? Qt.rgba(1, 1, 1, 0.15)
-            : mouseArea.containsMouse
+            : (mouseArea.containsMouse || appIcon.isSelected)
                 ? Qt.rgba(1, 1, 1, 0.08)
                 : "transparent"
 

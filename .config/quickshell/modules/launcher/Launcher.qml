@@ -13,6 +13,11 @@ Scope {
     property bool _panelOpen: false
     property string searchText: ""
 
+    // ── Keyboard navigation state ────────────────────────────────
+    property int kbSection: 0   // 0 = recent row, 1 = app grid
+    property int kbIndex: 0
+    property int gridColumns: 5
+
     // ── Icon path cache (icon name -> file path) ─────────────────
     property var iconCache: ({})
 
@@ -145,10 +150,58 @@ Scope {
         panelVisible = false;
     }
 
+    // ── Keyboard navigation ───────────────────────────────────────
+    function handleNavKey(dir) {
+        var recentVisible = recentApps.length > 0 && searchText === "";
+        var recentCount = recentApps.length;
+        var gridCount = filteredApps.length;
+        var cols = gridColumns;
+
+        if (recentVisible && kbSection === 0) {
+            // Recent row (horizontal)
+            if (dir === "left") {
+                if (kbIndex > 0) kbIndex--;
+            } else if (dir === "right") {
+                if (kbIndex < recentCount - 1) kbIndex++;
+            } else if (dir === "down") {
+                if (gridCount > 0) { kbSection = 1; kbIndex = 0; }
+            }
+            // up in recent row: do nothing
+        } else {
+            // App grid (2D)
+            if (dir === "left") {
+                if (kbIndex > 0) kbIndex--;
+            } else if (dir === "right") {
+                if (kbIndex < gridCount - 1) kbIndex++;
+            } else if (dir === "up") {
+                var upIdx = kbIndex - cols;
+                if (upIdx >= 0) {
+                    kbIndex = upIdx;
+                } else if (recentVisible) {
+                    kbSection = 0; kbIndex = 0;
+                }
+            } else if (dir === "down") {
+                var downIdx = kbIndex + cols;
+                if (downIdx < gridCount) kbIndex = downIdx;
+            }
+        }
+    }
+
+    function getKeyboardSelectedApp() {
+        if (kbSection === 0 && kbIndex >= 0 && kbIndex < recentApps.length)
+            return recentApps[kbIndex].entry;
+        if (kbSection === 1 && kbIndex >= 0 && kbIndex < filteredApps.length)
+            return filteredApps[kbIndex];
+        return null;
+    }
+
     onPanelVisibleChanged: {
         if (panelVisible) {
             _showing = true;
             searchText = "";
+            // Default selection: first recent app (or first grid app if no recent)
+            kbSection = recentApps.length > 0 ? 0 : 1;
+            kbIndex = 0;
         } else {
             _panelOpen = false;
         }
@@ -345,7 +398,17 @@ Scope {
                                     selectByMouse: true
                                     selectionColor: Root.Theme.primary
 
-                                    onTextChanged: launcher.searchText = text
+                                    onTextChanged: {
+                                        launcher.searchText = text;
+                                        // Reset kb selection on search change
+                                        if (text !== "") {
+                                            launcher.kbSection = 1;
+                                            launcher.kbIndex = 0;
+                                        } else {
+                                            launcher.kbSection = launcher.recentApps.length > 0 ? 0 : 1;
+                                            launcher.kbIndex = 0;
+                                        }
+                                    }
 
                                     // Auto-focus when component loads
                                     Component.onCompleted: focusTimer.start()
@@ -367,8 +430,32 @@ Scope {
                                     }
 
                                     Keys.onReturnPressed: {
-                                        if (launcher.filteredApps.length > 0) {
+                                        var app = launcher.getKeyboardSelectedApp();
+                                        if (app) {
+                                            launcher.launchApp(app);
+                                        } else if (launcher.filteredApps.length > 0) {
                                             launcher.launchApp(launcher.filteredApps[0]);
+                                        }
+                                    }
+
+                                    Keys.onUpPressed: (event) => {
+                                        launcher.handleNavKey("up");
+                                        event.accepted = true;
+                                    }
+                                    Keys.onDownPressed: (event) => {
+                                        launcher.handleNavKey("down");
+                                        event.accepted = true;
+                                    }
+                                    Keys.onLeftPressed: (event) => {
+                                        if (searchInput.text === "") {
+                                            launcher.handleNavKey("left");
+                                            event.accepted = true;
+                                        }
+                                    }
+                                    Keys.onRightPressed: (event) => {
+                                        if (searchInput.text === "") {
+                                            launcher.handleNavKey("right");
+                                            event.accepted = true;
                                         }
                                     }
                                 }
@@ -377,8 +464,36 @@ Scope {
 
                         // ── Scrollable content (recent apps + app grid) ─
                         Item {
+                            id: scrollContainer
                             Layout.fillWidth: true
                             Layout.fillHeight: true
+
+                            // Scroll to keep keyboard-selected item visible
+                            function scrollToSelected() {
+                                var recentH = recentSection.visible
+                                    ? recentSection.height + scrollContent.spacing
+                                    : 0;
+                                var targetY, itemH;
+                                if (launcher.kbSection === 0) {
+                                    targetY = 0;
+                                    itemH = 116;
+                                } else {
+                                    var row = Math.floor(launcher.kbIndex / panel.columns);
+                                    targetY = recentH + row * 126;
+                                    itemH = 126;
+                                }
+                                var viewH = appFlickable.height;
+                                if (targetY < appFlickable.contentY)
+                                    appFlickable.contentY = targetY;
+                                else if (targetY + itemH > appFlickable.contentY + viewH)
+                                    appFlickable.contentY = Math.max(0, targetY + itemH - viewH);
+                            }
+
+                            Connections {
+                                target: launcher
+                                function onKbIndexChanged() { scrollContainer.scrollToSelected() }
+                                function onKbSectionChanged() { scrollContainer.scrollToSelected() }
+                            }
 
                             Flickable {
                                 id: appFlickable
@@ -396,6 +511,7 @@ Scope {
 
                                     // ── Recent apps section (only when not searching) ─
                                     Column {
+                                        id: recentSection
                                         width: parent.width
                                         spacing: 8
                                         visible: launcher.recentApps.length > 0 && launcher.searchText === ""
@@ -410,13 +526,15 @@ Scope {
                                         Row {
                                             spacing: 4
 
-                                            Repeater {
+                                             Repeater {
                                                 model: launcher.recentApps
 
                                                 AppIcon {
                                                     required property var modelData
+                                                    required property int index
                                                     appName: modelData.name
                                                     iconSource: launcher.resolveIcon(modelData.icon)
+                                                    isSelected: launcher.kbSection === 0 && launcher.kbIndex === index
                                                     onClicked: launcher.launchApp(modelData.entry)
                                                 }
                                             }
@@ -442,6 +560,7 @@ Scope {
 
                                             Item {
                                                 required property var modelData
+                                                required property int index
                                                 width: appGrid.cellWidth
                                                 height: 126
 
@@ -449,6 +568,7 @@ Scope {
                                                     anchors.centerIn: parent
                                                     appName: modelData.name
                                                     iconSource: launcher.resolveIcon(modelData.icon)
+                                                    isSelected: launcher.kbSection === 1 && launcher.kbIndex === index
                                                     onClicked: launcher.launchApp(modelData)
                                                 }
                                             }
