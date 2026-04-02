@@ -6,6 +6,7 @@ import "modules/powermenu" as PowerMenu
 import "modules/controlcenter" as ControlCenter
 import "modules/notifications" as Notifications
 import "modules/launcher" as Launcher
+import "modules/osd" as Osd
 
 ShellRoot {
     id: root
@@ -48,6 +49,10 @@ ShellRoot {
 
     Launcher.Launcher {
         id: appLauncher
+    }
+
+    Osd.VolumeOsd {
+        id: volumeOsd
     }
 
     // --- Mutual Exclusivity ---
