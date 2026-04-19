@@ -165,7 +165,7 @@ Scope {
     // ── Theme persistence ────────────────────────────────────────
     Process {
         id: themeSaveProc
-        command: ["/bin/sh", "-c", "mkdir -p ~/.config/quickshell && echo '" + Root.Theme.currentTheme + "' > ~/.config/quickshell/current-theme"]
+        command: ["/bin/sh", "-c", "echo '" + Root.Theme.currentTheme + "' > ~/.config/quickshell/current-theme"]
     }
 
     Process {
@@ -333,7 +333,6 @@ Scope {
                 // block click-through to overlay close area
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {}
                 }
 
                 implicitHeight: pageContainer.height
@@ -352,7 +351,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 200
+                                duration: Root.Theme.animDuration
                                 easing.type: Easing.OutCubic
                             }
                         }
@@ -464,7 +463,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 200
+                                duration: Root.Theme.animDuration
                                 easing.type: Easing.OutCubic
                             }
                         }
@@ -483,7 +482,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 200
+                                duration: Root.Theme.animDuration
                                 easing.type: Easing.OutCubic
                             }
                         }
@@ -503,7 +502,7 @@ Scope {
 
                         Behavior on x {
                             NumberAnimation {
-                                duration: 200
+                                duration: Root.Theme.animDuration
                                 easing.type: Easing.OutCubic
                             }
                         }

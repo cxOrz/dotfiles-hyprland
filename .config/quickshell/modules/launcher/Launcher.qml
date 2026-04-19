@@ -17,6 +17,7 @@ Scope {
     property int kbSection: 0   // 0 = recent row, 1 = app grid
     property int kbIndex: 0
     property int gridColumns: 5
+    property bool gridFocused: false  // true = arrow keys navigate grid; false = search input
 
     // ── Icon path cache (icon name -> file path) ─────────────────
     property var iconCache: ({})
@@ -45,7 +46,7 @@ Scope {
     }
 
     function resolveIcon(iconName) {
-        if (!iconName || iconName === "") return "";
+        if (!iconName) return "";
         if (iconName.startsWith("/")) return "file://" + iconName;
         var path = iconCache[iconName];
         if (path) return "file://" + path;
@@ -58,7 +59,7 @@ Scope {
 
     Process {
         id: recentReadProc
-        command: ["/bin/sh", "-c", "mkdir -p ~/.cache/quickshell && cat ~/.cache/quickshell/recent-apps.txt 2>/dev/null || true"]
+        command: ["/bin/sh", "-c", "cat ~/.cache/quickshell/recent-apps.txt 2>/dev/null || true"]
         stdout: StdioCollector {
             onStreamFinished: {
                 var names = [];
@@ -114,10 +115,12 @@ Scope {
     // ── Filtered app list ────────────────────────────────────────
     property var allApps: {
         var apps = [];
+        var seen = {};
         var entries = DesktopEntries.applications.values;
         for (var i = 0; i < entries.length; i++) {
             var entry = entries[i];
-            if (entry && !entry.noDisplay && entry.name !== "") {
+            if (entry && !entry.noDisplay && entry.name !== "" && !seen[entry.name]) {
+                seen[entry.name] = true;
                 apps.push(entry);
             }
         }
@@ -188,9 +191,9 @@ Scope {
     }
 
     function getKeyboardSelectedApp() {
-        if (kbSection === 0 && kbIndex >= 0 && kbIndex < recentApps.length)
+        if (kbSection === 0 && kbIndex < recentApps.length)
             return recentApps[kbIndex].entry;
-        if (kbSection === 1 && kbIndex >= 0 && kbIndex < filteredApps.length)
+        if (kbSection === 1 && kbIndex < filteredApps.length)
             return filteredApps[kbIndex];
         return null;
     }
@@ -199,6 +202,7 @@ Scope {
         if (panelVisible) {
             _showing = true;
             searchText = "";
+            gridFocused = false;
             // Default selection: first recent app (or first grid app if no recent)
             kbSection = recentApps.length > 0 ? 0 : 1;
             kbIndex = 0;
@@ -272,9 +276,8 @@ Scope {
                 Rectangle {
                     id: panel
 
-                    property int columns: 5
                     property real cellW: 130
-                    property real panelW: columns * cellW + 48
+                    property real panelW: launcher.gridColumns * cellW + 48
                     property real panelH: Math.min(panelClip.height * 0.78, 780)
 
                     width: panelW
@@ -355,7 +358,6 @@ Scope {
                     // Block click-through
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: (mouse) => mouse.accepted = true
                     }
 
                     // ── Content layout ───────────────────────────
@@ -374,6 +376,8 @@ Scope {
                             Layout.preferredHeight: 48
                             radius: 24
                             color: Root.Theme.surfaceContainer
+                            opacity: launcher.gridFocused ? 0.5 : 1.0
+                            Behavior on opacity { NumberAnimation { duration: 150 } }
 
                             RowLayout {
                                 anchors.fill: parent
@@ -400,6 +404,7 @@ Scope {
 
                                     onTextChanged: {
                                         launcher.searchText = text;
+                                        launcher.gridFocused = false;
                                         // Reset kb selection on search change
                                         if (text !== "") {
                                             launcher.kbSection = 1;
@@ -429,33 +434,32 @@ Scope {
                                         verticalAlignment: Text.AlignVCenter
                                     }
 
-                                    Keys.onReturnPressed: {
-                                        var app = launcher.getKeyboardSelectedApp();
-                                        if (app) {
-                                            launcher.launchApp(app);
-                                        } else if (launcher.filteredApps.length > 0) {
-                                            launcher.launchApp(launcher.filteredApps[0]);
-                                        }
-                                    }
-
-                                    Keys.onUpPressed: (event) => {
-                                        launcher.handleNavKey("up");
-                                        event.accepted = true;
-                                    }
-                                    Keys.onDownPressed: (event) => {
-                                        launcher.handleNavKey("down");
-                                        event.accepted = true;
-                                    }
-                                    Keys.onLeftPressed: (event) => {
-                                        if (searchInput.text === "") {
-                                            launcher.handleNavKey("left");
+                                    // ── Unified key handler ──────────────
+                                    Keys.onPressed: (event) => {
+                                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                            var app = launcher.getKeyboardSelectedApp();
+                                            if (app) launcher.launchApp(app);
                                             event.accepted = true;
-                                        }
-                                    }
-                                    Keys.onRightPressed: (event) => {
-                                        if (searchInput.text === "") {
-                                            launcher.handleNavKey("right");
+                                        } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                                            launcher.gridFocused = !launcher.gridFocused;
                                             event.accepted = true;
+                                        } else if (launcher.gridFocused) {
+                                            if (event.key === Qt.Key_Up) {
+                                                launcher.handleNavKey("up");
+                                                event.accepted = true;
+                                            } else if (event.key === Qt.Key_Down) {
+                                                launcher.handleNavKey("down");
+                                                event.accepted = true;
+                                            } else if (event.key === Qt.Key_Left) {
+                                                launcher.handleNavKey("left");
+                                                event.accepted = true;
+                                            } else if (event.key === Qt.Key_Right) {
+                                                launcher.handleNavKey("right");
+                                                event.accepted = true;
+                                            } else if (event.text !== "" && event.key !== Qt.Key_Escape) {
+                                                // Printable character: switch back to search input
+                                                launcher.gridFocused = false;
+                                            }
                                         }
                                     }
                                 }
@@ -478,7 +482,7 @@ Scope {
                                     targetY = 0;
                                     itemH = 116;
                                 } else {
-                                    var row = Math.floor(launcher.kbIndex / panel.columns);
+                                    var row = Math.floor(launcher.kbIndex / launcher.gridColumns);
                                     targetY = recentH + row * 126;
                                     itemH = 126;
                                 }
@@ -534,7 +538,7 @@ Scope {
                                                     required property int index
                                                     appName: modelData.name
                                                     iconSource: launcher.resolveIcon(modelData.icon)
-                                                    isSelected: launcher.kbSection === 0 && launcher.kbIndex === index
+                                                    isSelected: launcher.gridFocused && launcher.kbSection === 0 && launcher.kbIndex === index
                                                     onClicked: launcher.launchApp(modelData.entry)
                                                 }
                                             }
@@ -553,7 +557,7 @@ Scope {
                                         id: appGrid
                                         width: parent.width
 
-                                        property real cellWidth: width / panel.columns
+                                        property real cellWidth: width / launcher.gridColumns
 
                                         Repeater {
                                             model: launcher.filteredApps
@@ -568,7 +572,7 @@ Scope {
                                                     anchors.centerIn: parent
                                                     appName: modelData.name
                                                     iconSource: launcher.resolveIcon(modelData.icon)
-                                                    isSelected: launcher.kbSection === 1 && launcher.kbIndex === index
+                                                    isSelected: launcher.gridFocused && launcher.kbSection === 1 && launcher.kbIndex === index
                                                     onClicked: launcher.launchApp(modelData)
                                                 }
                                             }

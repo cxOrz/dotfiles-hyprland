@@ -30,7 +30,7 @@ Item {
                 var wasEnabled = bt.enabled;
                 bt.enabled = text.includes("Powered: yes");
                 if (bt.enabled && !wasEnabled) listProc.running = true;
-                if (!bt.enabled) model.clear();
+                if (!bt.enabled) pairedModel.clear();
             }
         }
     }
@@ -42,13 +42,13 @@ Item {
             onStreamFinished: {
                 bt.scanning = false;
                 var lines = text.trim().split("\n");
-                model.clear();
+                pairedModel.clear();
                 for (var i = 0; i < lines.length; i++) {
                     var line = lines[i].trim();
                     if (line === "") continue;
                     var parts = line.split(" ");
                     if (parts.length >= 3 && parts[0] === "Device") {
-                        model.append({ mac: parts[1], name: parts.slice(2).join(" "), connected: false });
+                        pairedModel.append({ mac: parts[1], name: parts.slice(2).join(" "), connected: false });
                         checkConn(parts[1]);
                     }
                 }
@@ -145,9 +145,9 @@ Item {
         property string targetMAC: ""
         stdout: StdioCollector {
             onStreamFinished: {
-                for (var i = 0; i < model.count; i++) {
-                    if (model.get(i).mac === checkProc.targetMAC) {
-                        model.setProperty(i, "connected", text.includes("Connected: yes"));
+                for (var i = 0; i < pairedModel.count; i++) {
+                    if (pairedModel.get(i).mac === checkProc.targetMAC) {
+                        pairedModel.setProperty(i, "connected", text.includes("Connected: yes"));
                         break;
                     }
                 }
@@ -226,7 +226,7 @@ Item {
         }
     }
 
-    ListModel { id: model }
+    ListModel { id: pairedModel }
     ListModel { id: unpairedModel }
 
     // ── UI ───────────────────────────────────────────────────────────
@@ -430,7 +430,7 @@ Item {
 
         // ── Scanning placeholder ────────────────────────────────────
         ColumnLayout {
-            visible: bt.scanning && model.count === 0 && bt.enabled
+            visible: bt.scanning && pairedModel.count === 0 && bt.enabled
             Layout.fillWidth: true
             Layout.topMargin: 60
             spacing: 12
@@ -456,7 +456,7 @@ Item {
                     from: 0; to: 360
                     duration: 1200
                     loops: Animation.Infinite
-                    running: bt.scanning && model.count === 0 && bt.enabled
+                    running: bt.scanning && pairedModel.count === 0 && bt.enabled
                 }
             }
 
@@ -472,7 +472,7 @@ Item {
 
         // ── No paired devices ───────────────────────────────────────
         ColumnLayout {
-            visible: bt.enabled && model.count === 0 && !bt.scanning
+            visible: bt.enabled && pairedModel.count === 0 && !bt.scanning
             Layout.fillWidth: true
             Layout.topMargin: 60
             spacing: 12
@@ -519,7 +519,7 @@ Item {
             contentHeight: devicesCol.implicitHeight
             clip: true
             boundsMovement: Flickable.StopAtBounds
-            visible: bt.enabled && (model.count > 0 || unpairedModel.count > 0)
+            visible: bt.enabled && (pairedModel.count > 0 || unpairedModel.count > 0)
 
             ScrollBar.vertical: ScrollBar {
                 policy: ScrollBar.AsNeeded
@@ -538,7 +538,7 @@ Item {
 
                 // ── Paired Devices section ──────────────────────────
                 Text {
-                    visible: model.count > 0
+                    visible: pairedModel.count > 0
                     text: "PAIRED DEVICES"
                     font.family: Root.Theme.fontFamily
                     font.pixelSize: Root.Theme.fontSizeXS
@@ -553,7 +553,7 @@ Item {
                 }
 
                 Repeater {
-                    model: model
+                    model: pairedModel
 
                     delegate: Rectangle {
                         required property int index

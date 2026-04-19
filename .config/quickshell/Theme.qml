@@ -133,12 +133,9 @@ QtObject {
     readonly property color shelfBg: Qt.rgba(_shelfBgColor.r, _shelfBgColor.g, _shelfBgColor.b, 0.85)
 
     // ── Backward-compatible aliases ────────────────────────────────
-    // Used by notifications, powermenu, and other modules
+    // Used by shelf, controlcenter, and other modules
     readonly property color bg: panelBg
-    readonly property color bgSecondary: surfaceContainer
-    readonly property color bgTertiary: surfaceContainerHigh
     readonly property color accent: primary
-    readonly property color border: surfaceContainerHigh
     readonly property color surfaceHigh: surfaceBright
     readonly property color hoverOverlay: Qt.rgba(1, 1, 1, 0.08)
     readonly property color textDisabled: Qt.rgba(textSecondary.r, textSecondary.g, textSecondary.b, 0.35)
@@ -176,7 +173,7 @@ QtObject {
 
      // ── Animation durations (ms) ───────────────────────────────────
     readonly property int animDuration: 200
-    readonly property int animDurationFast: 200
+    readonly property int animDurationFast: 120
 
     // ── Theme metadata access ──────────────────────────────────────
     readonly property string themeName: _t.name

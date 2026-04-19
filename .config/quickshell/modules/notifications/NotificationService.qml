@@ -95,11 +95,6 @@ QtObject {
         return d + (d === 1 ? " day ago" : " days ago")
     }
 
-    // ── Public API (unchanged surface for NotificationCenter.qml) ────────
-    function refresh() {
-        // No-op: history is now maintained live in `notifications` array
-    }
-
     function clearAll() {
         for (var id in root._notifMap) {
             if (root._notifMap.hasOwnProperty(id))

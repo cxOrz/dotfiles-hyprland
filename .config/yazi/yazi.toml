@@ -1,3 +1,11 @@
 # yazi.toml
 [manager]
 show_hidden = true
+
+[opener]
+satty = [{ run = 'satty -f %s1', orphan = true }]
+
+[open]
+prepend_rules = [
+	{ mime = "image/*", use = "satty" },
+]

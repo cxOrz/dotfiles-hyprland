@@ -7,8 +7,7 @@ Item {
     height: 40
 
     Rectangle {
-        width: 40
-        height: 40
+        anchors.fill: parent
         radius: 20
         color: Root.Theme.surfaceHigh
 

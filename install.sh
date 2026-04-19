@@ -79,7 +79,7 @@ DEPS=(
     # Hyprland ecosystem
     hyprpaper hyprlock hyprpicker hyprpolkitagent
     # Screenshot & Image
-    feh grim slurp satty
+    grim slurp satty
     # Launcher
     rofi
     # Clipboard

@@ -572,10 +572,10 @@ Item {
 
                                         Text {
                                             anchors.centerIn: parent
-                                        text: "Connect"
-                                        font.family: Root.Theme.fontFamily
-                                        font.pixelSize: Root.Theme.fontSizeNormal
-                                        color: Root.Theme.tileActiveText
+                                            text: "Connect"
+                                            font.family: Root.Theme.fontFamily
+                                            font.pixelSize: Root.Theme.fontSizeNormal
+                                            color: Root.Theme.tileActiveText
                                             font.weight: Font.DemiBold
                                         }
 

@@ -18,7 +18,6 @@ Scope {
     onPanelVisibleChanged: {
         if (panelVisible) {
             _showing = true;
-            NotificationService.refresh();
         } else {
             _panelOpen = false;
         }
@@ -151,7 +150,6 @@ Scope {
                     // Block click-through
                     MouseArea {
                         anchors.fill: parent
-                        onClicked: {}
                     }
 
                     ColumnLayout {

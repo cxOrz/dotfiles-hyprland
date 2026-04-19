@@ -152,7 +152,7 @@ sudo systemctl enable greetd
 | `hyprlock` | Lock screen |
 | `hyprpicker` | Color picker |
 | `hyprpolkitagent` | Authentication agent |
-| `feh` | Image viewer |
+
 | `grim` | Wayland screenshot utility |
 | `slurp` | Region selector |
 | `satty` | Screenshot annotation tool |
