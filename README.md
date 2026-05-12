@@ -100,10 +100,10 @@ sudo systemctl enable greetd
 │   ├── dunst/              # Notification daemon
 │   ├── fcitx5/             # Chinese input method
 │   ├── hypr/               # Hyprland window manager
-│   │   ├── hyprland.conf   #   Main config (keybinds, rules, appearance)
+│   │   ├── hyprland.lua    #   Main config (keybinds, rules, appearance)
 │   │   ├── hyprlock.conf   #   Lock screen
 │   │   ├── hyprpaper.conf  #   Wallpaper
-│   │   ├── monitors.conf   #   Monitor setup
+│   │   ├── monitors.lua    #   Monitor setup
 │   │   └── scripts/
 │   ├── kitty/              # Terminal emulator
 │   ├── quickshell/         # Custom desktop UI
@@ -116,7 +116,6 @@ sudo systemctl enable greetd
 │   │   ├── shell.qml       # Main shell entry point
 │   │   └── Theme.qml       # Theme definitions (6 themes)
 │   ├── rofi/               # App launcher
-│   ├── uwsm/               # Wayland session environment
 │   ├── waybar/             # Status bar
 │   └── yazi/               # File manager
 ├── .local/share/
@@ -135,7 +134,6 @@ sudo systemctl enable greetd
 
 | Package | Description |
 | --- | --- |
-| `uwsm` | Universal Wayland Session Manager |
 | `greetd` | Login manager |
 | `kitty` | Terminal emulator |
 | `dunst` | Notification daemon |

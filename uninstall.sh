@@ -21,7 +21,7 @@ echo ""
 echo -e "${BOLD}  Hyprland Dotfiles Uninstaller${NC}"
 echo ""
 
-CONFIGS=(dunst fcitx5 hypr kitty quickshell rofi uwsm waybar yazi)
+CONFIGS=(dunst fcitx5 hypr kitty quickshell rofi waybar yazi)
 
 info "Removing config symlinks..."
 for dir in "${CONFIGS[@]}"; do
