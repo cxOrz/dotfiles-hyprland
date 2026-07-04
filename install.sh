@@ -77,7 +77,7 @@ DEPS=(
     # Audio
     pipewire pipewire-pulse pipewire-alsa wireplumber
     # Hyprland ecosystem
-    hyprpaper hyprlock hyprpicker hyprpolkitagent
+    hyprpaper hyprlock hypridle hyprpicker hyprpolkitagent
     # Screenshot & Image
     grim slurp satty
     # Launcher

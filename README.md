@@ -102,6 +102,7 @@ sudo systemctl enable greetd
 │   ├── hypr/               # Hyprland window manager
 │   │   ├── hyprland.lua    #   Main config (keybinds, rules, appearance)
 │   │   ├── hyprlock.conf   #   Lock screen
+│   │   ├── hypridle.conf  #   Idle daemon
 │   │   ├── hyprpaper.conf  #   Wallpaper
 │   │   ├── monitors.lua    #   Monitor setup
 │   │   └── scripts/
@@ -147,6 +148,7 @@ sudo systemctl enable greetd
 | `pipewire-alsa` | ALSA compatibility |
 | `wireplumber` | PipeWire session manager |
 | `hyprpaper` | Wallpaper manager |
+| `hypridle` | Idle daemon (auto lock / dpms) |
 | `hyprlock` | Lock screen |
 | `hyprpicker` | Color picker |
 | `hyprpolkitagent` | Authentication agent |

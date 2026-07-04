@@ -10,7 +10,7 @@ if [ ! -S "$YDOTOOL_SOCKET" ]; then
     sleep 0.3
 fi
 
-hyprctl dispatch focuswindow "class:hyprland-share-picker"
+hyprctl dispatch 'hl.dsp.focus({ window = "class:hyprland-share-picker" })'
 sleep 0.2
 ydotool key 15:1 15:0
 sleep 0.3
