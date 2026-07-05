@@ -79,10 +79,39 @@ Item {
     }
 
     Process {
+        id: disconnectProc
+        stdout: StdioCollector {}
+        onExited: (exitCode, exitStatus) => {
+            wifiPanel.errorMessage = "";
+            wifiPanel.showConnect = false;
+            wifiPanel.pendingSSID = "";
+            listNetworksProc.running = true;
+        }
+    }
+
+    Process {
+        id: forgetProc
+        stdout: StdioCollector {}
+        onExited: (exitCode, exitStatus) => {
+            wifiPanel.errorMessage = "";
+            wifiPanel.showConnect = false;
+            wifiPanel.pendingSSID = "";
+            listNetworksProc.running = true;
+        }
+    }
+
+    Process {
         id: rescanProc
         command: ["nmcli", "dev", "wifi", "rescan"]
         stdout: StdioCollector {}
-        onExited: (exitCode, exitStatus) => { listNetworksProc.running = true; }
+        onExited: (exitCode, exitStatus) => { rescanWaitTimer.start(); }
+    }
+
+    Timer {
+        id: rescanWaitTimer
+        interval: 3000
+        repeat: false
+        onTriggered: { listNetworksProc.running = true; }
     }
 
     Timer {
@@ -465,9 +494,7 @@ Item {
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    if (connected) return;
                                     if (wifiPanel.pendingSSID === ssid) {
-                                        // Toggle off
                                         wifiPanel.showConnect = false;
                                         wifiPanel.pendingSSID = "";
                                     } else {
@@ -476,7 +503,7 @@ Item {
                                         wifiPanel.pendingSecurity = security;
                                         wifiPanel.errorMessage = "";
                                         passwordField.text = "";
-                                        passwordField.forceActiveFocus();
+                                        if (!connected) passwordField.forceActiveFocus();
                                     }
                                 }
                             }
@@ -489,7 +516,7 @@ Item {
                             x: Root.Theme.paddingNormal
                             y: networkCard.height + 4
                             width: parent.width - 2 * Root.Theme.paddingNormal
-                            height: 88
+                            height: 96
                             radius: Root.Theme.radiusSmall
                             color: Root.Theme.surfaceContainerHigh
                             border.width: 1
@@ -500,8 +527,20 @@ Item {
                                 anchors.margins: Root.Theme.paddingNormal
                                 spacing: 8
 
-                                // Password field
+                                // Connected: show disclaimer
+                                Text {
+                                    visible: connected
+                                    Layout.fillWidth: true
+                                    text: "Connected to " + ssid
+                                    font.family: Root.Theme.fontFamily
+                                    font.pixelSize: Root.Theme.fontSizeNormal
+                                    color: Root.Theme.textSecondary
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+
+                                // Not connected: password field
                                 Rectangle {
+                                    visible: !connected
                                     Layout.fillWidth: true
                                     height: 34
                                     radius: Root.Theme.radiusSmall
@@ -527,52 +566,58 @@ Item {
                                     }
                                 }
 
-                                // Buttons
+                                // Forget / Connect / Disconnect buttons
                                 RowLayout {
                                     Layout.fillWidth: true
                                     spacing: 8
 
-                                    // Cancel
                                     Rectangle {
+                                        visible: connected
                                         Layout.fillWidth: true
                                         height: 28
                                         radius: Root.Theme.radiusSmall
-                                        color: cancelBtnMA.containsMouse ? Root.Theme.surfaceContainerHigh : "transparent"
+                                        color: "transparent"
                                         border.width: 1
-                                        border.color: Root.Theme.surfaceContainerHigh
+                                        border.color: forgetBtnMA.containsMouse ? Root.Theme.error : Root.Theme.surfaceContainerHigh
 
                                         Text {
                                             anchors.centerIn: parent
-                                            text: "Cancel"
+                                            text: "Forget"
                                             font.family: Root.Theme.fontFamily
                                             font.pixelSize: Root.Theme.fontSizeNormal
-                                            color: Root.Theme.textSecondary
+                                            color: forgetBtnMA.containsMouse ? Root.Theme.error : Root.Theme.textSecondary
                                         }
 
                                         MouseArea {
-                                            id: cancelBtnMA
+                                            id: forgetBtnMA
                                             anchors.fill: parent
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
-                                                wifiPanel.showConnect = false;
-                                                wifiPanel.pendingSSID = "";
+                                                forgetProc.command = ["nmcli", "connection", "delete", wifiPanel.pendingSSID];
+                                                forgetProc.running = true;
                                             }
                                         }
                                     }
 
-                                    // Connect
                                     Rectangle {
                                         Layout.fillWidth: true
                                         height: 28
                                         radius: Root.Theme.radiusSmall
-                                        color: connectBtnMA.containsMouse
-                                            ? Qt.lighter(Root.Theme.primary, 1.2)
-                                            : Root.Theme.primary
+                                        color: {
+                                            if (connected) {
+                                                return actionBtnMA.containsMouse
+                                                    ? Qt.lighter(Root.Theme.error, 1.2)
+                                                    : Root.Theme.error
+                                            }
+                                            return actionBtnMA.containsMouse
+                                                ? Qt.lighter(Root.Theme.primary, 1.2)
+                                                : Root.Theme.primary
+                                        }
 
                                         Text {
                                             anchors.centerIn: parent
-                                            text: "Connect"
+                                            text: connected ? "Disconnect" : "Connect"
                                             font.family: Root.Theme.fontFamily
                                             font.pixelSize: Root.Theme.fontSizeNormal
                                             color: Root.Theme.tileActiveText
@@ -580,12 +625,17 @@ Item {
                                         }
 
                                         MouseArea {
-                                            id: connectBtnMA
+                                            id: actionBtnMA
                                             anchors.fill: parent
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
-                                                wifiPanel.connectToNetwork(wifiPanel.pendingSSID, passwordField.text);
+                                                if (connected) {
+                                                    disconnectProc.command = ["nmcli", "connection", "down", wifiPanel.pendingSSID];
+                                                    disconnectProc.running = true;
+                                                } else {
+                                                    wifiPanel.connectToNetwork(wifiPanel.pendingSSID, passwordField.text);
+                                                }
                                             }
                                         }
                                     }

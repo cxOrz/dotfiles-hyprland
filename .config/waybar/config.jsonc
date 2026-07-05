@@ -63,7 +63,7 @@
     "format-wifi": "{icon}",
     "format-ethernet": "",
     "format-linked": "󰄡",
-    "format-disconnected": "",
+    "format-disconnected": "󰖪",
     "on-click": "qs ipc call controlcenter toggle",
     "tooltip": false
   },
