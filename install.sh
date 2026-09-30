@@ -63,7 +63,7 @@ echo ""
 # ═══════════════════════════════════════════════════════════════════
 DEPS=(
     # Session & Login
-    greetd
+    greetd greetd-tuigreet
     # Terminal
     kitty
     # Notification
@@ -306,13 +306,14 @@ echo -e "  2. Install a GTK dark theme and apply it:"
 echo -e "     ${DIM}gsettings set org.gnome.desktop.interface gtk-theme Material-Black-Blueberry"
 echo -e "     gsettings set org.gnome.desktop.interface color-scheme prefer-dark${NC}"
 echo ""
-echo -e "  3. Enable greetd login manager:"
+echo -e "  3. Set up the greetd login screen:"
+echo -e "     ${DIM}sudo install -Dm644 ${DOTFILES_DIR}/greetd/config.toml /etc/greetd/config.toml${NC}"
 echo -e "     ${DIM}sudo systemctl enable greetd${NC}"
 echo ""
 echo -e "  4. For Chinese input method setup, see:"
 echo -e "     ${DIM}.config/fcitx5/README.md${NC}"
 echo ""
-echo -e "  5. Log out and start a new Hyprland session."
+echo -e "  5. Reboot (or log out) and start a new Hyprland session."
 echo ""
 echo -e "  ${DIM}─────────────────────────────────────────────${NC}"
 echo -e "  ${DIM}Backups:      ${BACKUP_DIR:-none}${NC}"

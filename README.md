@@ -31,7 +31,7 @@ cd dotfiles-hyprland
 ./install.sh
 ```
 
-After installation, **log out and start a Hyprland session** via greetd.
+After installation, set up the login screen and **reboot to start a Hyprland session**. Hyprland is started directly with `start-hyprland` (no session manager is required).
 
 ### Post-install
 
@@ -40,9 +40,26 @@ After installation, **log out and start a Hyprland session** via greetd.
 gsettings set org.gnome.desktop.interface gtk-theme Material-Black-Blueberry
 gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
-# Enable login manager
+# Set up the greetd + tuigreet login screen
+sudo install -Dm644 greetd/config.toml /etc/greetd/config.toml
 sudo systemctl enable greetd
 ```
+
+### Login screen (greetd + tuigreet)
+
+The login screen is [tuigreet](https://github.com/apognu/tuigreet), configured in [`greetd/config.toml`](./greetd/config.toml):
+
+```toml
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --remember --cmd 'start-hyprland'"
+user = "greeter"
+```
+
+- `--remember` pre-fills the last used username.
+- `--cmd 'start-hyprland'` launches Hyprland directly; press `F3` in tuigreet to pick a different session.
 
 ## Keybindings
 
@@ -122,6 +139,8 @@ sudo systemctl enable greetd
 ├── .local/share/
 │   └── fcitx5/             # Rime config & input themes
 ├── examples/               # Screenshots
+├── greetd/
+│   └── config.toml         # Login screen (greetd + tuigreet)
 ├── install.sh
 ├── uninstall.sh
 ├── LICENSE
@@ -136,6 +155,7 @@ sudo systemctl enable greetd
 | Package | Description |
 | --- | --- |
 | `greetd` | Login manager |
+| `greetd-tuigreet` | TUI login screen for greetd |
 | `kitty` | Terminal emulator |
 | `dunst` | Notification daemon |
 | `quickshell` | QML-based desktop shell toolkit |

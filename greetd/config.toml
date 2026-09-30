@@ -1,0 +1,16 @@
+# greetd configuration — TUI login screen (tuigreet).
+#
+# Install to /etc/greetd/config.toml:
+#   sudo install -Dm644 greetd/config.toml /etc/greetd/config.toml
+#   sudo systemctl enable greetd
+#
+# Hyprland is started directly with `start-hyprland`
+# (no session manager is required).
+
+[terminal]
+vt = 1
+
+[default_session]
+# --remember: pre-fill the last successfully used username
+command = "tuigreet --remember --cmd 'start-hyprland'"
+user = "greeter"
