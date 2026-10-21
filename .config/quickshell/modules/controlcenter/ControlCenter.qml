@@ -461,6 +461,10 @@ Scope {
                         height: pageContainer.height
                         x: controlCenter.currentPage === "wifi" ? 0 : pageContainer.width
 
+                        // Lets the Wi-Fi page know when it is the visible page so
+                        // it can kick off a scan instead of showing a stale list.
+                        pageActive: controlCenter.currentPage === "wifi"
+
                         Behavior on x {
                             NumberAnimation {
                                 duration: Root.Theme.animDuration

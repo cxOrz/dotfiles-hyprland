@@ -11,14 +11,31 @@ Item {
 
     signal back()
 
+    // Set by the parent while this page is the visible one.
+    property bool pageActive: false
+
     property bool wifiEnabled: true
     property bool scanning: false
     property string errorMessage: ""
+
+    // Wifi device name (e.g. "wlan0"), filled in by the profile dump.
+    property string wifiDevice: ""
+    // UUID of the profile that is currently active.
+    property string activeUuid: ""
 
     // Inline password input state
     property string pendingSSID: ""
     property string pendingSecurity: ""
     property bool showConnect: false
+
+    // Raw data, merged into networkListModel whenever either source changes.
+    property var scanResults: []
+    property var savedProfiles: []
+
+    // Activation state, kept across retries.
+    property int activateAttempts: 0
+    property string activateUuid: ""
+    property var activateCommand: []
 
 
     // ── Processes ────────────────────────────────────────────────
@@ -31,22 +48,23 @@ Item {
                 var wasEnabled = wifiPanel.wifiEnabled;
                 wifiPanel.wifiEnabled = (text.trim() === "enabled");
                 if (wifiPanel.wifiEnabled && !wasEnabled) {
-                    listNetworksProc.running = true;
+                    wifiPanel.startScan();
                 }
                 if (!wifiPanel.wifiEnabled) {
-                    networkListModel.clear();
+                    wifiPanel.scanning = false;
                 }
             }
         }
     }
 
+    // Scan results as reported by the backend (cached, does not trigger a scan).
     Process {
         id: listNetworksProc
         command: ["nmcli", "-t", "-f", "SSID,SIGNAL,SECURITY,IN-USE", "dev", "wifi", "list"]
         stdout: StdioCollector {
             onStreamFinished: {
                 wifiPanel.scanning = false;
-                wifiPanel.parseNetworks(text);
+                wifiPanel.parseScanned(text);
             }
         }
         onExited: (exitCode, exitStatus) => {
@@ -57,25 +75,56 @@ Item {
         }
     }
 
+    // Saved connection profiles (uuid / ssid / autoconnect / priority / iface).
     Process {
-        id: toggleWifiProc
-        stdout: StdioCollector {}
-        onExited: (exitCode, exitStatus) => { radioStatusProc.running = true; }
+        id: listProfilesProc
+        command: ["/bin/sh", "-c", "~/.config/quickshell/scripts/wifi-networks.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                wifiPanel.parseProfiles(text);
+            }
+        }
     }
 
     Process {
-        id: connectProc
+        id: toggleWifiProc
+        stdout: StdioCollector {}
+        onExited: (exitCode, exitStatus) => {
+            radioStatusProc.running = true;
+            listProfilesProc.running = true;
+        }
+    }
+
+    // Activation, for both saved profiles and networks without one.
+    //
+    // iwd needs a moment to finish tearing down the previous connection
+    // before it accepts a new one. NetworkManager does not wait and reports
+    // the race as "no-secrets" / "Operation failed", so retry once.
+    Process {
+        id: activateProc
         stdout: StdioCollector {}
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0) {
+                if (wifiPanel.activateAttempts < 1) {
+                    wifiPanel.activateAttempts++;
+                    activateRetryTimer.start();
+                    return;
+                }
                 wifiPanel.errorMessage = "Connection failed";
             } else {
                 wifiPanel.errorMessage = "";
                 wifiPanel.showConnect = false;
                 wifiPanel.pendingSSID = "";
             }
-            listNetworksProc.running = true;
+            wifiPanel.refresh();
         }
+    }
+
+    Timer {
+        id: activateRetryTimer
+        interval: 1500
+        repeat: false
+        onTriggered: { wifiPanel.runActivation(); }
     }
 
     Process {
@@ -85,7 +134,7 @@ Item {
             wifiPanel.errorMessage = "";
             wifiPanel.showConnect = false;
             wifiPanel.pendingSSID = "";
-            listNetworksProc.running = true;
+            wifiPanel.refresh();
         }
     }
 
@@ -96,7 +145,7 @@ Item {
             wifiPanel.errorMessage = "";
             wifiPanel.showConnect = false;
             wifiPanel.pendingSSID = "";
-            listNetworksProc.running = true;
+            wifiPanel.refresh();
         }
     }
 
@@ -104,20 +153,23 @@ Item {
         id: rescanProc
         command: ["nmcli", "dev", "wifi", "rescan"]
         stdout: StdioCollector {}
+        // Ignore the exit code: a busy backend rejects the request, but the
+        // list that follows is still worth showing.
         onExited: (exitCode, exitStatus) => { rescanWaitTimer.start(); }
     }
 
     Timer {
         id: rescanWaitTimer
-        interval: 3000
+        interval: 3500
         repeat: false
         onTriggered: { listNetworksProc.running = true; }
     }
 
+    // Cheap refresh — re-reads the cached scan list.
     Timer {
         id: refreshTimer
         interval: 10000
-        running: wifiPanel.visible && wifiPanel.wifiEnabled
+        running: wifiPanel.pageActive && wifiPanel.wifiEnabled
         repeat: true
         onTriggered: {
             if (!wifiPanel.scanning) {
@@ -127,17 +179,56 @@ Item {
         }
     }
 
+    // Real scan — the cached list is frozen between rescans, so without this
+    // the panel keeps showing whatever was found at boot.
+    Timer {
+        id: rescanTimer
+        interval: 30000
+        running: wifiPanel.pageActive && wifiPanel.wifiEnabled
+        repeat: true
+        onTriggered: { wifiPanel.startScan(); }
+    }
+
     Component.onCompleted: {
         radioStatusProc.running = true;
+        listProfilesProc.running = true;
         scanning = true;
         listNetworksProc.running = true;
+        // pageActive may already be true here, in which case
+        // onPageActiveChanged never fires.
+        if (pageActive) startScan();
+    }
+
+    onPageActiveChanged: {
+        if (pageActive) {
+            radioStatusProc.running = true;
+            listProfilesProc.running = true;
+            startScan();
+        }
     }
 
     // ── Logic ────────────────────────────────────────────────────
 
-    function parseNetworks(output) {
+    function startScan() {
+        if (!wifiEnabled) return;
+        scanning = true;
+        errorMessage = "";
+        rescanProc.running = true;
+    }
+
+    function refresh() {
+        listProfilesProc.running = true;
+        listNetworksProc.running = true;
+    }
+
+    // nmcli terse output escapes ':' as '\:'.
+    function unescapeNm(value) {
+        return value.replace(/\\:/g, ":").replace(/\\\\/g, "\\");
+    }
+
+    function parseScanned(output) {
         var lines = output.trim().split("\n");
-        var networks = [];
+        var results = [];
         var seen = {};
 
         for (var i = 0; i < lines.length; i++) {
@@ -154,34 +245,151 @@ Item {
 
             var sigColon = rest.lastIndexOf(':');
             var signal = parseInt(rest.substring(sigColon + 1).trim());
-            var ssid = rest.substring(0, sigColon).replace(/\\:/g, ':');
+            var ssid = unescapeNm(rest.substring(0, sigColon).trim());
 
             if (isNaN(signal)) signal = 0;
             if (ssid === "") continue;
 
             if (seen[ssid] !== undefined) {
                 var idx = seen[ssid];
-                if (networks[idx].signal < signal) {
-                    networks[idx].signal = signal;
-                    networks[idx].security = security;
+                if (results[idx].signal < signal) {
+                    results[idx].signal = signal;
+                    results[idx].security = security;
                 }
-                if (inUse === "*") networks[idx].connected = true;
+                if (inUse === "*") results[idx].inUse = true;
                 continue;
             }
 
-            seen[ssid] = networks.length;
-            networks.push({ ssid: ssid, signal: signal, security: security, connected: inUse === "*" });
+            seen[ssid] = results.length;
+            results.push({ ssid: ssid, signal: signal, security: security, inUse: inUse === "*" });
         }
 
-        networks.sort(function(a, b) {
+        scanResults = results;
+        rebuildModel();
+    }
+
+    function parseProfiles(output) {
+        var lines = output.trim().split("\n");
+        var profiles = [];
+        var active = "";
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if (line === "") continue;
+
+            var parts = line.split("\t");
+            if (parts[0] === "DEV") {
+                wifiDevice = parts.length > 1 ? parts[1] : "";
+                continue;
+            }
+            if (parts[0] === "ACTIVE") {
+                active = parts.length > 1 ? parts[1] : "";
+                continue;
+            }
+            if (parts[0] !== "CON") continue;
+
+            profiles.push({
+                uuid: parts.length > 1 ? parts[1] : "",
+                ssid: parts.length > 2 ? parts[2] : "",
+                autoconnect: parts.length > 3 ? parts[3] : "no",
+                priority: parseInt(parts.length > 4 ? parts[4] : "0") || 0,
+                iface: parts.length > 5 ? parts[5] : "",
+                keyMgmt: parts.length > 6 ? parts[6] : ""
+            });
+        }
+
+        savedProfiles = profiles;
+        activeUuid = active;
+        rebuildModel();
+    }
+
+    // A profile pinned to an interface that does not exist here can never be
+    // activated, so unpinned profiles win over pinned ones for the same SSID.
+    function profileScore(profile) {
+        var usable = (profile.iface === "" || profile.iface === wifiDevice) ? 1000 : 0;
+        return usable + profile.priority;
+    }
+
+    function rebuildModel() {
+        var merged = {};
+        var order = [];
+
+        // Saved profiles first: they stay usable even when the AP is missing
+        // from the current scan results.
+        for (var i = 0; i < savedProfiles.length; i++) {
+            var p = savedProfiles[i];
+            if (!p.ssid) continue;
+
+            var entry = merged[p.ssid];
+            if (!entry) {
+                entry = {
+                    ssid: p.ssid,
+                    signal: 0,
+                    security: p.keyMgmt ? "WPA2" : "",
+                    connected: p.uuid === activeUuid,
+                    saved: true,
+                    uuid: p.uuid,
+                    score: profileScore(p)
+                };
+                merged[p.ssid] = entry;
+                order.push(p.ssid);
+            } else {
+                if (p.uuid === activeUuid) entry.connected = true;
+                var score = profileScore(p);
+                if (score > entry.score) {
+                    entry.uuid = p.uuid;
+                    entry.score = score;
+                }
+            }
+        }
+
+        // Then whatever the radio is currently seeing.
+        for (var j = 0; j < scanResults.length; j++) {
+            var n = scanResults[j];
+            if (!n.ssid) continue;
+
+            var known = merged[n.ssid];
+            if (known) {
+                known.signal = n.signal;
+                if (n.security) known.security = n.security;
+                if (n.inUse) known.connected = true;
+            } else {
+                merged[n.ssid] = {
+                    ssid: n.ssid,
+                    signal: n.signal,
+                    security: n.security,
+                    connected: n.inUse,
+                    saved: false,
+                    uuid: "",
+                    score: 0
+                };
+                order.push(n.ssid);
+            }
+        }
+
+        var rows = [];
+        for (var k = 0; k < order.length; k++) rows.push(merged[order[k]]);
+
+        rows.sort(function(a, b) {
             if (a.connected && !b.connected) return -1;
             if (!a.connected && b.connected) return 1;
+            if (a.saved && !b.saved) return -1;
+            if (!a.saved && b.saved) return 1;
             return b.signal - a.signal;
         });
 
         networkListModel.clear();
-        for (var j = 0; j < networks.length; j++) networkListModel.append(networks[j]);
-        errorMessage = "";
+        for (var m = 0; m < rows.length; m++) {
+            var r = rows[m];
+            networkListModel.append({
+                ssid: r.ssid,
+                signal: r.signal,
+                security: r.security,
+                connected: r.connected,
+                saved: r.saved,
+                uuid: r.uuid
+            });
+        }
     }
 
     function toggleWifi() {
@@ -195,11 +403,24 @@ Item {
 
     function connectToNetwork(ssid, password) {
         if (password && password.length > 0) {
-            connectProc.command = ["nmcli", "dev", "wifi", "connect", ssid, "password", password];
+            activateCommand = ["nmcli", "dev", "wifi", "connect", ssid, "password", password];
         } else {
-            connectProc.command = ["nmcli", "dev", "wifi", "connect", ssid];
+            activateCommand = ["nmcli", "dev", "wifi", "connect", ssid];
         }
-        connectProc.running = true;
+        activateAttempts = 0;
+        runActivation();
+    }
+
+    function activateProfile(uuid) {
+        activateUuid = uuid;
+        activateCommand = ["nmcli", "connection", "up", uuid];
+        activateAttempts = 0;
+        runActivation();
+    }
+
+    function runActivation() {
+        activateProc.command = activateCommand;
+        activateProc.running = true;
     }
 
     function signalIcon(strength) {
@@ -304,10 +525,10 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (!wifiPanel.scanning && wifiPanel.wifiEnabled) {
+                            if (wifiPanel.wifiEnabled) {
                                 wifiPanel.scanning = true;
                                 wifiPanel.errorMessage = "";
-                                rescanProc.running = true;
+                                wifiPanel.startScan();
                             }
                         }
                     }
@@ -414,13 +635,15 @@ Item {
                         required property int signal
                         required property string security
                         required property bool connected
+                        required property bool saved
+                        required property string uuid
 
                         Layout.fillWidth: true
                         width: networkCol.width
-                        // Card height + optional password area
-                        implicitHeight: networkCard.height + (showPass ? passwordBox.height + 4 : 0)
+                        // Card height + optional detail area
+                        implicitHeight: networkCard.height + (showDetail ? detailBox.height + 4 : 0)
 
-                        property bool showPass: wifiPanel.showConnect && wifiPanel.pendingSSID === ssid
+                        property bool showDetail: wifiPanel.showConnect && wifiPanel.pendingSSID === ssid
 
                         Rectangle {
                             id: networkCard
@@ -431,8 +654,8 @@ Item {
                             color: connected
                                 ? Qt.rgba(Root.Theme.primaryContainer.r, Root.Theme.primaryContainer.g, Root.Theme.primaryContainer.b, 0.25)
                                 : itemMA.containsMouse ? Root.Theme.surfaceContainerHigh : Root.Theme.surfaceContainer
-                            border.width: connected || showPass ? 1 : 0
-                            border.color: connected ? Root.Theme.primary : Root.Theme.primary
+                            border.width: connected || showDetail ? 1 : 0
+                            border.color: Root.Theme.primary
 
                             RowLayout {
                                 anchors.fill: parent
@@ -471,6 +694,25 @@ Item {
                                     color: Root.Theme.textSecondary
                                 }
 
+                                // Saved badge — the profile exists, so it can be
+                                // activated without retyping the passphrase.
+                                Rectangle {
+                                    visible: saved && !connected
+                                    implicitWidth: savedLbl.implicitWidth + 12
+                                    implicitHeight: 20
+                                    radius: 10
+                                    color: Root.Theme.surfaceContainerHigh
+
+                                    Text {
+                                        id: savedLbl
+                                        anchors.centerIn: parent
+                                        text: "Saved"
+                                        font.family: Root.Theme.fontFamily
+                                        font.pixelSize: Root.Theme.fontSizeXS
+                                        color: Root.Theme.textSecondary
+                                    }
+                                }
+
                                 Rectangle {
                                     visible: connected
                                     implicitWidth: connLbl.implicitWidth + 12
@@ -503,20 +745,20 @@ Item {
                                         wifiPanel.pendingSecurity = security;
                                         wifiPanel.errorMessage = "";
                                         passwordField.text = "";
-                                        if (!connected) passwordField.forceActiveFocus();
+                                        if (!connected && !saved) passwordField.forceActiveFocus();
                                     }
                                 }
                             }
                         }
 
-                        // ── Inline password input ────────────────
+                        // ── Inline detail area ────────────────
                         Rectangle {
-                            id: passwordBox
-                            visible: showPass
+                            id: detailBox
+                            visible: showDetail
                             x: Root.Theme.paddingNormal
                             y: networkCard.height + 4
                             width: parent.width - 2 * Root.Theme.paddingNormal
-                            height: 96
+                            height: connected ? 96 : (saved ? 68 : 96)
                             radius: Root.Theme.radiusSmall
                             color: Root.Theme.surfaceContainerHigh
                             border.width: 1
@@ -538,9 +780,21 @@ Item {
                                     horizontalAlignment: Text.AlignHCenter
                                 }
 
-                                // Not connected: password field
+                                // Saved but not connected: no passphrase needed
+                                Text {
+                                    visible: !connected && saved
+                                    Layout.fillWidth: true
+                                    text: "Saved network — connect without re-entering the password"
+                                    font.family: Root.Theme.fontFamily
+                                    font.pixelSize: Root.Theme.fontSizeNormal
+                                    color: Root.Theme.textSecondary
+                                    horizontalAlignment: Text.AlignHCenter
+                                    wrapMode: Text.Wrap
+                                }
+
+                                // Not saved: password field
                                 Rectangle {
-                                    visible: !connected
+                                    visible: !connected && !saved
                                     Layout.fillWidth: true
                                     height: 34
                                     radius: Root.Theme.radiusSmall
@@ -594,7 +848,7 @@ Item {
                                             hoverEnabled: true
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
-                                                forgetProc.command = ["nmcli", "connection", "delete", wifiPanel.pendingSSID];
+                                                forgetProc.command = ["nmcli", "connection", "delete", uuid];
                                                 forgetProc.running = true;
                                             }
                                         }
@@ -631,8 +885,10 @@ Item {
                                             cursorShape: Qt.PointingHandCursor
                                             onClicked: {
                                                 if (connected) {
-                                                    disconnectProc.command = ["nmcli", "connection", "down", wifiPanel.pendingSSID];
+                                                    disconnectProc.command = ["nmcli", "connection", "down", uuid];
                                                     disconnectProc.running = true;
+                                                } else if (saved) {
+                                                    wifiPanel.activateProfile(uuid);
                                                 } else {
                                                     wifiPanel.connectToNetwork(wifiPanel.pendingSSID, passwordField.text);
                                                 }

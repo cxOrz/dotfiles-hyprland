@@ -61,6 +61,11 @@ user = "greeter"
 - `--remember` pre-fills the last used username.
 - `--cmd 'start-hyprland'` launches Hyprland directly; press `F3` in tuigreet to pick a different session.
 
+### Wi-Fi
+
+Wi-Fi is handled by NetworkManager with the iwd backend. For the backend settings and
+auto-connect behaviour, see [networkmanager/README.md](./networkmanager/README.md).
+
 ## Keybindings
 
 ### General
@@ -141,6 +146,9 @@ user = "greeter"
 ├── examples/               # Screenshots
 ├── greetd/
 │   └── config.toml         # Login screen (greetd + tuigreet)
+├── networkmanager/
+│   ├── README.md            # Wi-Fi (NetworkManager + iwd) notes
+│   └── wifi_backend.conf    # NetworkManager Wi-Fi backend settings
 ├── install.sh
 ├── uninstall.sh
 ├── LICENSE
