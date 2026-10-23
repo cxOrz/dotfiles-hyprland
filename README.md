@@ -66,6 +66,35 @@ user = "greeter"
 Wi-Fi is handled by NetworkManager with the iwd backend. For the backend settings and
 auto-connect behaviour, see [networkmanager/README.md](./networkmanager/README.md).
 
+## Remote Access (VNC)
+
+[`hypr-vnc`](./.local/bin/hypr-vnc) exposes the current Hyprland output over VNC on
+`127.0.0.1` only. Start it on demand and connect through an SSH tunnel:
+
+```bash
+ssh -L 5900:127.0.0.1:5900 user@host
+hypr-vnc start
+
+# on the local machine
+vncviewer 127.0.0.1:5900
+
+# when finished
+hypr-vnc stop
+```
+
+It captures the focused physical output when one is connected, uses Hyprland's `FALLBACK`
+output when no physical output is present, and creates a headless output when there is
+none. If Hyprland is not running, it starts a session through `seatd` (the user must be in
+the `seat` group) and creates a headless output.
+
+> The “Hyprland not running” path needs `seatd`: `sudo pacman -S seatd`,
+> `sudo systemctl enable --now seatd`,
+> `sudo usermod -aG seat,render "$USER"` (log in again afterwards). `video` is
+> usually unnecessary with seatd, but harmless if you already have it.
+
+`hypr-vnc status` shows what is currently captured; `hypr-vnc --help` lists the options.
+Logs are in `/run/user/$(id -u)/hypr-vnc/`.
+
 ## Keybindings
 
 ### General
@@ -141,8 +170,11 @@ auto-connect behaviour, see [networkmanager/README.md](./networkmanager/README.m
 │   ├── rofi/               # App launcher
 │   ├── waybar/             # Status bar
 │   └── yazi/               # File manager
-├── .local/share/
-│   └── fcitx5/             # Rime config & input themes
+├── .local/
+│   ├── bin/
+│   │   └── hypr-vnc        # On-demand VNC for the current output
+│   └── share/
+│       └── fcitx5/         # Rime config & input themes
 ├── examples/               # Screenshots
 ├── greetd/
 │   └── config.toml         # Login screen (greetd + tuigreet)
@@ -180,6 +212,8 @@ auto-connect behaviour, see [networkmanager/README.md](./networkmanager/README.m
 | `hyprlock` | Lock screen |
 | `hyprpicker` | Color picker |
 | `hyprpolkitagent` | Authentication agent |
+| `wayvnc` | VNC server for the current Hyprland output |
+| `jq` | JSON parsing for `hypr-vnc` |
 
 | `grim` | Wayland screenshot utility |
 | `slurp` | Region selector |

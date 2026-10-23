@@ -1,0 +1,418 @@
+#!/usr/bin/env bash
+# hypr-vnc — 按需把 Hyprland 的当前输出通过 wayvnc 暴露到 127.0.0.1
+#
+# 三种情况：
+#   1. Hyprland 在运行，有物理显示器  -> 捕获物理输出
+#   2. Hyprland 在运行，没有物理显示器 -> 捕获 Hyprland 的 FALLBACK
+#   3. Hyprland 没在运行               -> 通过 seatd 启动会话，创建 VNC-1
+#
+# 只负责“把现有画面接到 VNC”，不移动工作区、不关闭显示器。
+
+set -euo pipefail
+
+PROG=${0##*/}
+: "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
+export XDG_RUNTIME_DIR
+
+STATE_DIR="$XDG_RUNTIME_DIR/hypr-vnc"
+PIDFILE="$STATE_DIR/wayvnc.pid"
+OUTFILE="$STATE_DIR/output"
+PORTFILE="$STATE_DIR/port"
+CREATEDFILE="$STATE_DIR/output-created"
+SESSION_PIDFILE="$STATE_DIR/session.pid"
+HYPR_PIDFILE="$STATE_DIR/hypr.pid"
+VNC_LOG="$STATE_DIR/wayvnc.log"
+SESSION_LOG="$STATE_DIR/session.log"
+
+PORT="${HYPR_VNC_PORT:-5900}"
+FPS="${HYPR_VNC_FPS:-30}"
+RES="${HYPR_VNC_RES:-1920x1080@60}"
+OUT_OVERRIDE="${HYPR_VNC_OUTPUT:-}"
+
+die()  { printf '%s: %s\n' "$PROG" "$*" >&2; exit 1; }
+info() { printf '%s\n' "$*"; }
+
+usage() {
+    cat <<EOF
+用法:
+  $PROG start [选项]   把当前 Hyprland 输出接到 VNC
+  $PROG stop           停止 wayvnc；如果会话是脚本启动的，一并关闭
+  $PROG status         查看状态
+
+选项:
+  -p, --port PORT      VNC 端口（默认 5900，仅监听 127.0.0.1）
+  -f, --fps N          最大帧率（默认 30）
+  -r, --res WxH[@Hz]   需要新建 headless 输出时的分辨率（默认 1920x1080@60）
+  -o, --output NAME    强制指定输出名；不存在时按 headless 创建
+  -h, --help           显示帮助
+
+行为:
+  Hyprland 已运行 + 有物理显示器   -> wayvnc -o <物理输出>
+  Hyprland 已运行 + 只有 FALLBACK  -> wayvnc -o FALLBACK
+  Hyprland 已运行 + 没有任何输出   -> 创建 VNC-1 后捕获
+  Hyprland 没运行                  -> seatd 启动 Hyprland，创建 VNC-1 后捕获
+
+连接:
+  ssh -L 5900:127.0.0.1:5900 <用户>@<这台机器>
+  vncviewer 127.0.0.1:5900
+
+环境变量:
+  HYPR_VNC_SSH_HOST  启动提示里显示的 SSH 目标，例如 user@my-tunnel.example.com
+EOF
+}
+
+# ---------------------------------------------------------------- 基础检查
+
+require_tools() {
+    command -v hyprctl >/dev/null 2>&1 || die "找不到 hyprctl"
+    command -v jq      >/dev/null 2>&1 || die "找不到 jq"
+    command -v wayvnc  >/dev/null 2>&1 || die "找不到 wayvnc"
+    command -v ss      >/dev/null 2>&1 || die "找不到 ss（iproute2）"
+    command -v setsid  >/dev/null 2>&1 || die "找不到 setsid（util-linux）"
+}
+
+validate_args() {
+    [[ $PORT =~ ^[0-9]+$ ]] && ((PORT > 0 && PORT < 65536)) || die "端口不合法: $PORT"
+    [[ $FPS  =~ ^[0-9]+$ ]] && ((FPS > 0)) || die "FPS 不合法: $FPS"
+    [[ $RES  =~ ^[0-9]+x[0-9]+(@[0-9.]+)?$ ]] || die "分辨率格式应为 WxH[@Hz]: $RES"
+    if [[ -n $OUT_OVERRIDE ]]; then
+        [[ $OUT_OVERRIDE =~ ^[A-Za-z0-9_.-]+$ ]] || die "输出名不合法: $OUT_OVERRIDE"
+    fi
+}
+
+# ---------------------------------------------------------------- Hyprland
+
+hypr_running() {
+    local json
+    json=$(hyprctl instances -j 2>/dev/null) || return 1
+    [[ -n $json && $json != "[]" ]]
+}
+
+load_hypr_env() {
+    local json sig sock
+    json=$(hyprctl instances -j 2>/dev/null) || return 1
+    sig=$(jq -r '.[0].instance // empty' <<<"$json")
+    sock=$(jq -r '.[0].wl_socket // empty' <<<"$json")
+    [[ -n $sig && -n $sock ]] || return 1
+    export HYPRLAND_INSTANCE_SIGNATURE="$sig"
+    export WAYLAND_DISPLAY="$sock"
+    return 0
+}
+
+output_exists() {
+    hyprctl monitors all -j 2>/dev/null |
+        jq -e --arg n "$1" 'any(.[]; .name == $n)' >/dev/null 2>&1
+}
+
+# 选现有输出：优先物理显示器，其次 FALLBACK
+pick_output() {
+    local json real fallback
+    json=$(hyprctl monitors -j 2>/dev/null) || return 1
+
+    real=$(jq -r '
+        [ .[] | select(.name | test("^(FALLBACK|HEADLESS-|WL-)") | not) ]
+        | (map(select(.focused)) + .)
+        | .[0].name // empty' <<<"$json")
+    if [[ -n $real ]]; then
+        printf '%s\n' "$real"
+        return 0
+    fi
+
+    fallback=$(jq -r '.[] | select(.name == "FALLBACK") | .name' <<<"$json" | head -n1)
+    if [[ -n $fallback ]]; then
+        printf '%s\n' "$fallback"
+        return 0
+    fi
+
+    return 1
+}
+
+create_headless_output() {
+    local out=$1 i
+    [[ $out =~ ^[A-Za-z0-9_.-]+$ ]] || die "输出名不合法: $out"
+
+    if ! output_exists "$out"; then
+        hyprctl output create headless "$out" >/dev/null 2>&1 || true
+    fi
+
+    for i in $(seq 1 30); do
+        if output_exists "$out"; then break; fi
+        sleep 0.1
+    done
+    output_exists "$out" || die "创建虚拟输出 $out 失败"
+
+    # 0.56 的 Lua 配置；老版本回退到 keyword
+    hyprctl eval "hl.monitor({ output = \"$out\", mode = \"$RES\", position = \"auto\", scale = 1, disabled = false })" >/dev/null 2>&1 ||
+        hyprctl keyword monitor "$out,$RES,auto,1" >/dev/null 2>&1 || true
+
+    sleep 0.2
+    printf '%s\n' "$out"
+}
+
+# ---------------------------------------------------------------- 启动会话
+
+start_session() {
+    [[ -S /run/seatd.sock ]] || die "Hyprland 没运行，且 seatd 不可用（缺少 /run/seatd.sock）"
+    id -nG | tr ' ' '\n' | grep -qx seat || die "当前用户不在 seat 组，seatd 无法授权 DRM"
+
+    export LIBSEAT_BACKEND=seatd
+    export XDG_CURRENT_DESKTOP=Hyprland
+    export XDG_SESSION_DESKTOP=Hyprland
+    export XDG_SESSION_TYPE=wayland
+    unset HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY
+
+    mkdir -p "$STATE_DIR"
+    : >"$SESSION_LOG"
+
+    local -a launcher=()
+    if command -v start-hyprland >/dev/null 2>&1; then
+        launcher=(start-hyprland)
+    else
+        launcher=(Hyprland)
+    fi
+
+    # SSH 里没有 session bus，用 dbus-run-session 包一层（有就用）
+    if command -v dbus-run-session >/dev/null 2>&1; then
+        setsid dbus-run-session -- "${launcher[@]}" >>"$SESSION_LOG" 2>&1 &
+    else
+        setsid "${launcher[@]}" >>"$SESSION_LOG" 2>&1 &
+    fi
+    printf '%s\n' "$!" >"$SESSION_PIDFILE"
+
+    local json sig sock i
+    for i in $(seq 1 300); do
+        json=$(hyprctl instances -j 2>/dev/null || true)
+        if [[ -n $json && $json != "[]" ]]; then
+            sig=$(jq -r '.[0].instance // empty' <<<"$json")
+            sock=$(jq -r '.[0].wl_socket // empty' <<<"$json")
+            [[ -n $sig && -n $sock ]] && break
+        fi
+        sleep 0.2
+    done
+
+    if [[ -z ${sig:-} || -z ${sock:-} ]]; then
+        tail -n 30 "$SESSION_LOG" >&2 2>/dev/null || true
+        return 1
+    fi
+
+    export HYPRLAND_INSTANCE_SIGNATURE="$sig"
+    export WAYLAND_DISPLAY="$sock"
+    jq -r '.[0].pid // empty' <<<"$json" >"$HYPR_PIDFILE" 2>/dev/null || true
+    sleep 1
+    return 0
+}
+
+# ---------------------------------------------------------------- wayvnc
+
+start_wayvnc() {
+    local out=$1 i pid
+    if ss -ltnH "sport = :$PORT" 2>/dev/null | grep -q .; then
+        die "端口 $PORT 已被占用"
+    fi
+
+    mkdir -p "$STATE_DIR"
+    : >"$VNC_LOG"
+    setsid wayvnc -o "$out" -f "$FPS" -r 127.0.0.1 "$PORT" </dev/null >>"$VNC_LOG" 2>&1 &
+
+    for i in $(seq 1 50); do
+        if ss -ltnH "sport = :$PORT" 2>/dev/null | grep -q .; then break; fi
+        sleep 0.1
+    done
+    if ! ss -ltnH "sport = :$PORT" 2>/dev/null | grep -q .; then
+        tail -n 20 "$VNC_LOG" >&2 2>/dev/null || true
+        return 1
+    fi
+
+    pid=$(ss -ltnpH "sport = :$PORT" 2>/dev/null |
+        sed -n 's/.*pid=\([0-9]\+\).*/\1/p' | head -n1)
+    [[ -n $pid ]] || return 1
+
+    printf '%s\n' "$pid" >"$PIDFILE"
+    printf '%s\n' "$out" >"$OUTFILE"
+    printf '%s\n' "$PORT" >"$PORTFILE"
+    return 0
+}
+
+kill_wayvnc() {
+    local pid="" port="${PORT:-5900}"
+
+    if [[ -f "$PIDFILE" ]]; then
+        pid=$(cat "$PIDFILE")
+    elif [[ -f "$PORTFILE" ]]; then
+        port=$(cat "$PORTFILE")
+        pid=$(ss -ltnpH "sport = :$port" 2>/dev/null |
+            sed -n 's/.*pid=\([0-9]\+\).*/\1/p' | head -n1)
+    fi
+    [[ -n $pid ]] || return 0
+    kill -0 "$pid" 2>/dev/null || return 0
+    [[ -r "/proc/$pid/cmdline" ]] || return 0
+    tr '\0' ' ' <"/proc/$pid/cmdline" | grep -q wayvnc || return 0
+
+    kill "$pid" 2>/dev/null || true
+    local i
+    for i in $(seq 1 30); do
+        kill -0 "$pid" 2>/dev/null || return 0
+        sleep 0.1
+    done
+    kill -9 "$pid" 2>/dev/null || true
+}
+
+print_summary() {
+    local out=$1 host_ip ssh_target
+    host_ip=$(ip -4 route get 1.1.1.1 2>/dev/null |
+        awk '{ for (i = 1; i <= NF; i++) if ($i == "src") { print $(i + 1); exit } }' || true)
+    if [[ -z $host_ip ]]; then
+        host_ip=$(ip -4 -o addr show scope global 2>/dev/null |
+            awk 'NR == 1 { split($4, a, "/"); print a[1] }' || true)
+    fi
+    ssh_target=${HYPR_VNC_SSH_HOST:-$(id -un)@${host_ip:-<这台机器>}}
+
+    cat <<EOF
+
+VNC 已启动
+  输出    : $out
+  监听    : 127.0.0.1:$PORT（仅本机）
+  PID     : $(cat "$PIDFILE")
+  日志    : $VNC_LOG
+
+从远端连接:
+  ssh -L $PORT:127.0.0.1:$PORT $ssh_target
+  vncviewer 127.0.0.1:$PORT
+
+停止:
+  $PROG stop
+EOF
+}
+
+# ---------------------------------------------------------------- 子命令
+
+cmd_start() {
+    while (($#)); do
+        case $1 in
+            -p|--port)   PORT=${2:?缺少参数}; shift 2 ;;
+            -f|--fps)    FPS=${2:?缺少参数}; shift 2 ;;
+            -r|--res)    RES=${2:?缺少参数}; shift 2 ;;
+            -o|--output) OUT_OVERRIDE=${2:?缺少参数}; shift 2 ;;
+            -h|--help)   usage; exit 0 ;;
+            *)           die "未知选项: $1" ;;
+        esac
+    done
+
+    require_tools
+    validate_args
+
+    if [[ -f "$PIDFILE" ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+        info "VNC 已经在运行（PID $(cat "$PIDFILE")）。先执行 '$PROG stop'。"
+        return 0
+    fi
+
+    local out=""
+
+    if hypr_running; then
+        load_hypr_env || die "无法读取 Hyprland 环境"
+
+        if [[ -n $OUT_OVERRIDE ]]; then
+            if ! output_exists "$OUT_OVERRIDE"; then
+                out=$(create_headless_output "$OUT_OVERRIDE")
+                printf '1\n' >"$CREATEDFILE"
+            else
+                out=$OUT_OVERRIDE
+            fi
+        else
+            out=$(pick_output || true)
+            if [[ -z $out ]]; then
+                info "Hyprland 没有可用输出，创建 VNC-1"
+                out=$(create_headless_output "VNC-1")
+                printf '1\n' >"$CREATEDFILE"
+            fi
+        fi
+    else
+        info "Hyprland 没在运行，通过 seatd 启动会话"
+        start_session || die "Hyprland 启动失败（日志: $SESSION_LOG）"
+        out=$(create_headless_output "${OUT_OVERRIDE:-VNC-1}")
+        printf '1\n' >"$CREATEDFILE"
+    fi
+
+    start_wayvnc "$out" || die "wayvnc 启动失败（日志: $VNC_LOG）"
+    print_summary "$out"
+}
+
+cmd_stop() {
+    local started_session=0
+
+    if [[ -f "$SESSION_PIDFILE" ]]; then
+        started_session=1
+    fi
+
+    kill_wayvnc
+
+    # 只有 Hyprland 是脚本启动的，才关闭它
+    if (( started_session )); then
+        local hypr_pid=""
+        [[ -f "$HYPR_PIDFILE" ]] && hypr_pid=$(cat "$HYPR_PIDFILE")
+
+        if [[ -n $hypr_pid ]] && kill -0 "$hypr_pid" 2>/dev/null; then
+            info "关闭脚本启动的 Hyprland 会话（PID $hypr_pid）"
+            kill "$hypr_pid" 2>/dev/null || true
+            local i
+            for i in $(seq 1 50); do
+                kill -0 "$hypr_pid" 2>/dev/null || break
+                sleep 0.1
+            done
+            kill -9 "$hypr_pid" 2>/dev/null || true
+        fi
+
+        local launcher_pid=""
+        [[ -f "$SESSION_PIDFILE" ]] && launcher_pid=$(cat "$SESSION_PIDFILE")
+        if [[ -n $launcher_pid ]] && kill -0 "$launcher_pid" 2>/dev/null; then
+            kill "$launcher_pid" 2>/dev/null || true
+        fi
+    fi
+
+    rm -f "$PIDFILE" "$OUTFILE" "$PORTFILE" "$CREATEDFILE" \
+          "$SESSION_PIDFILE" "$HYPR_PIDFILE"
+
+    info "已停止。"
+}
+
+cmd_status() {
+    local pid=""
+    if [[ -f "$PIDFILE" ]]; then
+        pid=$(cat "$PIDFILE")
+    fi
+
+    if hypr_running; then
+        info "Hyprland : 运行中"
+        if load_hypr_env 2>/dev/null; then
+            hyprctl monitors -j 2>/dev/null |
+                jq -r '.[] | "输出     : \(.name) \(.width)x\(.height)@\(.refreshRate)"' ||
+                true
+        fi
+    else
+        info "Hyprland : 未运行"
+    fi
+
+    if [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null; then
+        info "wayvnc   : 运行中 (PID $pid)"
+        [[ -f "$OUTFILE" ]] && info "捕获     : $(cat "$OUTFILE")"
+        [[ -f "$PORTFILE" ]] && info "端口     : $(cat "$PORTFILE")"
+    else
+        info "wayvnc   : 未运行"
+    fi
+
+    [[ -f "$SESSION_PIDFILE" ]] && info "会话     : 由脚本启动（会话 PID $(cat "$SESSION_PIDFILE")）"
+    [[ -f "$VNC_LOG" ]] && info "日志     : $VNC_LOG"
+}
+
+# ---------------------------------------------------------------- main
+
+cmd=${1:-}
+if [[ $# -gt 0 ]]; then shift; fi
+
+case $cmd in
+    start|up)   cmd_start "$@" ;;
+    stop|down)  cmd_stop ;;
+    status)     cmd_status ;;
+    -h|--help|help|"") usage ;;
+    *) usage; exit 1 ;;
+esac

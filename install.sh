@@ -78,6 +78,8 @@ DEPS=(
     pipewire pipewire-pulse pipewire-alsa wireplumber
     # Hyprland ecosystem
     hyprpaper hyprlock hypridle wlopm hyprpicker hyprpolkitagent
+    # Remote VNC
+    wayvnc jq
     # Screenshot & Image
     grim slurp satty
     # Launcher
@@ -240,6 +242,10 @@ if [[ -e "$LOCAL_DIR/share/fcitx5" && ! -L "$LOCAL_DIR/share/fcitx5" ]]; then
     BACKUP_NEEDED=true
 fi
 
+if [[ -e "$LOCAL_DIR/bin/hypr-vnc" && ! -L "$LOCAL_DIR/bin/hypr-vnc" ]]; then
+    BACKUP_NEEDED=true
+fi
+
 if [[ "$BACKUP_NEEDED" == true ]]; then
     BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d_%H%M%S)"
     info "Backing up existing configs to ${DIM}${BACKUP_DIR}${NC}"
@@ -259,6 +265,12 @@ if [[ "$BACKUP_NEEDED" == true ]]; then
         success "Backed up .local/share/fcitx5"
     fi
 
+    if [[ -e "$LOCAL_DIR/bin/hypr-vnc" && ! -L "$LOCAL_DIR/bin/hypr-vnc" ]]; then
+        mkdir -p "$BACKUP_DIR/.local/bin"
+        mv "$LOCAL_DIR/bin/hypr-vnc" "$BACKUP_DIR/.local/bin/hypr-vnc"
+        success "Backed up .local/bin/hypr-vnc"
+    fi
+
     echo ""
 fi
 
@@ -269,6 +281,7 @@ info "Deploying configurations..."
 
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$LOCAL_DIR/share"
+mkdir -p "$LOCAL_DIR/bin"
 
 for dir in "${CONFIGS_TO_LINK[@]}"; do
     link_config "$DOTFILES_DIR/.config/$dir" "$CONFIG_DIR/$dir"
@@ -278,6 +291,10 @@ success "Linked config directories"
 # .local/share/fcitx5
 link_config "$DOTFILES_DIR/.local/share/fcitx5" "$LOCAL_DIR/share/fcitx5"
 success "Linked .local/share/fcitx5"
+
+# .local/bin/hypr-vnc
+link_config "$DOTFILES_DIR/.local/bin/hypr-vnc" "$LOCAL_DIR/bin/hypr-vnc"
+success "Linked .local/bin/hypr-vnc"
 
 echo ""
 
@@ -318,7 +335,11 @@ echo -e "     ${DIM}sudo install -Dm644 ${DOTFILES_DIR}/networkmanager/wifi_back
 echo -e "     ${DIM}nmcli general reload${NC}"
 echo -e "     ${DIM}For details, see networkmanager/README.md${NC}"
 echo ""
-echo -e "  6. Reboot (or log out) and start a new Hyprland session."
+echo -e "  6. Remote VNC (optional):"
+echo -e "     ${DIM}hypr-vnc start    # 127.0.0.1:5900 — connect through an SSH tunnel${NC}"
+echo -e "     ${DIM}hypr-vnc --help${NC}"
+echo ""
+echo -e "  7. Reboot (or log out) and start a new Hyprland session."
 echo ""
 echo -e "  ${DIM}─────────────────────────────────────────────${NC}"
 echo -e "  ${DIM}Backups:      ${BACKUP_DIR:-none}${NC}"

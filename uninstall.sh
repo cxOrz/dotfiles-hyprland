@@ -37,6 +37,11 @@ if [[ -L "$LOCAL_DIR/share/fcitx5" ]]; then
     success "Removed .local/share/fcitx5"
 fi
 
+if [[ -L "$LOCAL_DIR/bin/hypr-vnc" ]]; then
+    rm "$LOCAL_DIR/bin/hypr-vnc"
+    success "Removed .local/bin/hypr-vnc"
+fi
+
 echo ""
 echo -e "${GREEN}${BOLD}  Uninstall complete.${NC}"
 echo ""
